@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#F6F3EC" />
     <meta name="description" content="Kinsenas — a payday budget tracker for the 15th and end-of-month paycheck." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Geist+Mono:wght@400;500;600&family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+    <!-- Fonts used above the fold, fetched in parallel with the JS so text doesn't reflow on swap. -->
+    <link rel="preload" href="/fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/geist-mono-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
     <title>Kinsenas · Payday Budget</title>
     <script>
       // Apply saved theme before first paint to avoid a flash.
@@ -21,7 +22,13 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static app shell: paints before the JS arrives; React replaces it on mount. -->
+      <div class="boot" role="presentation">
+        <span class="boot-mark" aria-hidden="true">₱</span>
+        <span class="boot-name">Kinsenas</span>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

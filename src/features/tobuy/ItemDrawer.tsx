@@ -41,7 +41,7 @@ function fromItem(item?: ToBuyItem): FormState {
 const isHttpUrl = (s: string) => /^https?:\/\/\S+$/i.test(s);
 
 /** Global add/edit To-Buy drawer. */
-export function ItemDrawer() {
+export default function ItemDrawer() {
   const drawer = useUi((s) => s.toBuyDrawer);
   const { open, editing } = drawer;
   const close = useUi((s) => s.closeToBuy);

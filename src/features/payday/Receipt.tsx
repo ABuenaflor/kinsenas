@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import type { ReactNode } from "react";
 import { HandStroke } from "@/components/ui/diy";
 import { NumberTicker } from "@/components/ui/NumberTicker";
@@ -69,31 +69,31 @@ export function Receipt({
         {subtitle && <p className="text-[11px] text-muted">{subtitle}</p>}
       </div>
       <hr className="dash my-3" />
-      <motion.div key={printKey} initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.04 } } }}>
-        <motion.div variants={item}>
+      <m.div key={printKey} initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.04 } } }}>
+        <m.div variants={item}>
           <Row label="GROSS PAY" value={formatMoney(gross)} strong />
-        </motion.div>
+        </m.div>
         {govAlreadyDeducted && (
-          <motion.p variants={item} className="py-1 text-[11px] text-muted">
+          <m.p variants={item} className="py-1 text-[11px] text-muted">
             Gov't contributions & tax already deducted by employer.
-          </motion.p>
+          </m.p>
         )}
         {deductions.map((d) => (
-          <motion.div key={d.key} variants={item}>
+          <m.div key={d.key} variants={item}>
             <Row label={d.label} value={`−${formatMoney(d.amount)}`} muted={d.amount === 0} />
-          </motion.div>
+          </m.div>
         ))}
-        <motion.hr variants={item} className="dash my-2" />
-        <motion.div variants={item} className="flex items-baseline justify-between py-1">
+        <m.hr variants={item} className="dash my-2" />
+        <m.div variants={item} className="flex items-baseline justify-between py-1">
           <span className="text-sm font-bold tracking-[0.1em]">NET PAY</span>
           <span className={cn("relative text-2xl font-semibold", negative && "text-danger")}>
             <NumberTicker value={net} live />
             {circleNet && <HandStroke kind="circle" className="absolute -inset-x-4 -inset-y-3 h-[calc(100%+24px)] w-[calc(100%+32px)]" color="var(--danger)" width={2} delay={0.35} />}
           </span>
-        </motion.div>
+        </m.div>
         <AnimatePresence>
           {negative && (
-            <motion.p
+            <m.p
               role="alert"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -101,32 +101,32 @@ export function Receipt({
               className="mt-1 rounded-sm bg-danger/10 px-2 py-1.5 font-sans text-xs text-danger"
             >
               Deductions are bigger than gross this cutoff. Allocations are set to ₱0.00 — you can still save.
-            </motion.p>
+            </m.p>
           )}
         </AnimatePresence>
-        <motion.hr variants={item} className="dash my-2" />
-        <motion.p variants={item} className="pb-1 text-[11px] tracking-[0.2em] text-muted">
+        <m.hr variants={item} className="dash my-2" />
+        <m.p variants={item} className="pb-1 text-[11px] tracking-[0.2em] text-muted">
           ALLOCATION
-        </motion.p>
+        </m.p>
         {allocations.map((a) => (
-          <motion.div key={a.bucketId} variants={item}>
+          <m.div key={a.bucketId} variants={item}>
             <Row label={a.name} swatch={a.color} value={formatMoney(a.amount)} extra={net > 0 ? formatBps(Math.round(ratio(a.amount, net) * 10000)) : undefined} />
-          </motion.div>
+          </m.div>
         ))}
         {setAsides.length > 0 && (
           <>
-            <motion.hr variants={item} className="dash my-2" />
-            <motion.p variants={item} className="pb-1 text-[11px] tracking-[0.2em] text-muted">
+            <m.hr variants={item} className="dash my-2" />
+            <m.p variants={item} className="pb-1 text-[11px] tracking-[0.2em] text-muted">
               SET ASIDE FOR TO-BUY
-            </motion.p>
+            </m.p>
             {setAsides.map((s, i) => (
-              <motion.div key={`${s.name}-${i}`} variants={item}>
+              <m.div key={`${s.name}-${i}`} variants={item}>
                 <Row label={`↳ ${s.name}`} value={formatMoney(s.amount)} muted />
-              </motion.div>
+              </m.div>
             ))}
           </>
         )}
-      </motion.div>
+      </m.div>
       <hr className="dash my-3" />
       <p className="text-center text-[10.5px] leading-relaxed text-muted">
         Estimates only. Your employer's payroll is the official computation.

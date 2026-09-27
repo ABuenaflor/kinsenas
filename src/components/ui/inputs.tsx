@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import {
   forwardRef,
   useEffect,
@@ -222,7 +222,7 @@ export function Switch({
         className="relative inline-flex h-11 w-14 shrink-0 items-center justify-center disabled:opacity-40"
       >
         <span className={cn("absolute h-7 w-12 rounded-full transition-colors duration-200", checked ? "bg-ink" : "bg-line")} />
-        <motion.span
+        <m.span
           initial={false}
           animate={{ x: checked ? 10 : -10 }}
           transition={{ type: "spring", stiffness: 600, damping: 35 }}
@@ -295,7 +295,7 @@ export function SegmentedControl<T extends string>({
             )}
           >
             {active && (
-              <motion.span
+              <m.span
                 layoutId={pillId}
                 className="absolute inset-0 rounded-full bg-accent"
                 style={o.color ? { background: o.color } : undefined}

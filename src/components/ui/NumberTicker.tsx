@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { useReduced } from "@/hooks/useMedia";
 import { cn } from "@/lib/cn";
 import { formatMoney } from "@/lib/money";
@@ -9,7 +9,7 @@ const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 function Digit({ d }: { d: number }) {
   return (
     <span className="relative inline-block h-[1em] overflow-hidden leading-none" style={{ width: "1ch" }}>
-      <motion.span
+      <m.span
         className="absolute left-0 top-0 flex flex-col"
         initial={false}
         animate={{ y: `${-d * 10}%` }}
@@ -20,7 +20,7 @@ function Digit({ d }: { d: number }) {
             {n}
           </span>
         ))}
-      </motion.span>
+      </m.span>
     </span>
   );
 }

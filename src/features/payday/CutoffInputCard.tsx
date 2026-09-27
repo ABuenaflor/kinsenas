@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { ChevronDown, Plus, Trash2 } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { useLocation } from "react-router";
@@ -86,9 +86,9 @@ export function CutoffInputCard({ draft, update, preview, editing, legacy, dirty
         />
         <AnimatePresence>
           {editing && (
-            <motion.span initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}>
+            <m.span initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}>
               <LabelTag>Editing</LabelTag>
-            </motion.span>
+            </m.span>
           )}
         </AnimatePresence>
       </div>
@@ -121,13 +121,13 @@ export function CutoffInputCard({ draft, update, preview, editing, legacy, dirty
           className="flex min-h-11 w-full items-center justify-between text-sm font-medium"
         >
           Adjust this cutoff
-          <motion.span animate={{ rotate: adjustOpen ? 180 : 0 }}>
+          <m.span animate={{ rotate: adjustOpen ? 180 : 0 }}>
             <ChevronDown className="size-4 text-muted" />
-          </motion.span>
+          </m.span>
         </button>
         <AnimatePresence initial={false}>
           {adjustOpen && (
-            <motion.div
+            <m.div
               id={adjustId}
               initial={{ opacity: 0, clipPath: "inset(0 0 100% 0)" }}
               animate={{ opacity: 1, clipPath: "inset(0 0 0% 0)" }}
@@ -207,7 +207,7 @@ export function CutoffInputCard({ draft, update, preview, editing, legacy, dirty
               <Field label="Note" htmlFor={noteId}>
                 <TextInput id={noteId} value={draft.note} onChange={(e) => update({ note: e.target.value })} placeholder="e.g. with OT pay" />
               </Field>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useLayoutEffect, useRef, type RefObject } from "react";
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -12,18 +12,21 @@ export function useFocusTrap(ref: RefObject<HTMLElement | null>, active: boolean
     escRef.current = onEscape;
   });
 
-  useEffect(() => {
+  // Layout effect: focus moves in before paint, so keys typed right after opening (Ctrl+K → type) aren't lost.
+  useLayoutEffect(() => {
     if (!active) return;
     const previous = document.activeElement as HTMLElement | null;
     openCount++;
     document.body.style.overflow = "hidden";
 
-    const raf = requestAnimationFrame(() => {
+    const focusInitial = () => {
       const root = ref.current;
       if (!root || root.contains(document.activeElement)) return;
       const target = root.querySelector<HTMLElement>("[data-autofocus]") ?? root.querySelector<HTMLElement>(FOCUSABLE) ?? root;
       target.focus({ preventScroll: true });
-    });
+    };
+    focusInitial();
+    const raf = requestAnimationFrame(focusInitial); // retry once if content mounted a frame late
 
     const onKey = (e: KeyboardEvent) => {
       const root = ref.current;

@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import type { ReactNode } from "react";
 import { useReduced } from "@/hooks/useMedia";
 import { cn } from "@/lib/cn";
@@ -7,7 +7,7 @@ import { cn } from "@/lib/cn";
 export function BlurHeading({ text, className, as: Tag = "h1" }: { text: string; className?: string; as?: "h1" | "h2" }) {
   const reduced = useReduced();
   const words = text.split(" ");
-  const MotionTag = Tag === "h1" ? motion.h1 : motion.h2;
+  const MotionTag = Tag === "h1" ? m.h1 : m.h2;
   return (
     <MotionTag
       className={cn("font-display leading-[1.05] tracking-tight", className)}
@@ -18,20 +18,21 @@ export function BlurHeading({ text, className, as: Tag = "h1" }: { text: string;
       aria-label={text}
     >
       {words.map((w, i) => (
-        <motion.span
+        <m.span
           key={`${w}-${i}`}
           aria-hidden
           className="inline-block whitespace-pre"
           variants={
             reduced
-              ? { hidden: { opacity: 0 }, show: { opacity: 1 } }
-              : { hidden: { opacity: 0, filter: "blur(8px)", y: 8 }, show: { opacity: 1, filter: "blur(0px)", y: 0 } }
+              ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
+              : // Starts faint-but-visible (not opacity 0) so the heading paints right away and counts for LCP.
+                { hidden: { opacity: 0.3, filter: "blur(8px)", y: 8 }, show: { opacity: 1, filter: "blur(0px)", y: 0 } }
           }
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         >
           {w}
           {i < words.length - 1 ? " " : ""}
-        </motion.span>
+        </m.span>
       ))}
     </MotionTag>
   );

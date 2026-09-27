@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, Reorder, useDragControls } from "motion/react";
+import { AnimatePresence, m, Reorder, useDragControls } from "motion/react";
 import { ChevronDown, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/layout/PeriodSwitcher";
@@ -192,24 +192,24 @@ export default function ToBuyPage() {
           ))}
         </Reorder.Group>
       ) : (
-        <motion.div layout className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <m.div layout className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           <AnimatePresence>
             {visible.map((item) => (
-              <motion.div key={item.id} layout initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}>
+              <m.div key={item.id} layout initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}>
                 <ItemCard item={item} bucket={buckets.get(item.bucketId)} actions={actions} confettiKey={confetti[item.id] ?? 0} />
-              </motion.div>
+              </m.div>
             ))}
           </AnimatePresence>
-        </motion.div>
+        </m.div>
       )}
       </TabPanel>
 
       {bought.length > 0 && (
         <section className="mt-12">
           <button type="button" onClick={() => setShowBought((v) => !v)} aria-expanded={showBought} className="flex min-h-11 items-center gap-2 text-sm font-medium">
-            <motion.span animate={{ rotate: showBought ? 0 : -90 }}>
+            <m.span animate={{ rotate: showBought ? 0 : -90 }}>
               <ChevronDown className="size-4" />
-            </motion.span>
+            </m.span>
             Bought ({bought.length})
           </button>
           {showBought && (

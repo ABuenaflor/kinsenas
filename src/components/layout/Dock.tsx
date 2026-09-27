@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { ChartColumn, Gift, Monitor, Moon, ReceiptText, Search, Settings2, Sun, Wallet, type LucideIcon } from "lucide-react";
 import { NavLink, useLocation } from "react-router";
 import { KeyboardHint } from "@/components/ui/misc";
@@ -29,9 +29,9 @@ export function ThemeToggle({ className }: { className?: string }) {
       title={`Theme: ${label}`}
       className={cn("grid size-11 place-items-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-ink", className)}
     >
-      <motion.span key={theme} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+      <m.span key={theme} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
         <Icon className="size-[18px]" />
-      </motion.span>
+      </m.span>
     </button>
   );
 }
@@ -53,7 +53,7 @@ function NavItem({ to, label, icon: Icon, compact }: (typeof NAV)[number] & { co
       )}
     >
       {active && (
-        <motion.span
+        <m.span
           layoutId={compact ? "nav-pill-m" : "nav-pill"}
           className="absolute inset-0 rounded-full bg-accent"
           transition={{ type: "spring", stiffness: 500, damping: 38 }}

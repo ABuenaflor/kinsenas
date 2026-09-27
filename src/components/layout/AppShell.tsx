@@ -1,15 +1,55 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/Toast";
-import { ExpenseDrawer } from "@/features/expenses/ExpenseDrawer";
-import { ItemDrawer } from "@/features/tobuy/ItemDrawer";
 import { useReduced } from "@/hooks/useMedia";
 import { useStore } from "@/store/useStore";
+import { useUi } from "@/store/useUi";
 import { AnimatedOutlet } from "./AnimatedOutlet";
-import { CommandPalette } from "./CommandPalette";
+import CommandPalette from "./CommandPalette";
 import { Dock } from "./Dock";
 import { QuickAddFab } from "./QuickAddFab";
 
 const Onboarding = lazy(() => import("@/features/onboarding/Onboarding"));
+
+// Drawers load on first use (prefetched when the browser is idle) to keep the first paint light. The palette is
+// small and must take keystrokes the instant Ctrl+K is pressed, so it's bundled with the shell.
+const loadExpenseDrawer = () => import("@/features/expenses/ExpenseDrawer");
+const loadItemDrawer = () => import("@/features/tobuy/ItemDrawer");
+const ExpenseDrawer = lazy(loadExpenseDrawer);
+const ItemDrawer = lazy(loadItemDrawer);
+
+/** True once `open` has been true; the overlay then stays mounted so its exit animation can play. */
+function useEverOpened(open: boolean): boolean {
+  const [ever, setEver] = useState(open);
+  if (open && !ever) setEver(true);
+  return ever;
+}
+
+function useOverlayPrefetch() {
+  useEffect(() => {
+    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number; cancelIdleCallback?: (id: number) => void };
+    const run = () => void Promise.all([loadExpenseDrawer(), loadItemDrawer()]);
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(run);
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const t = setTimeout(run, 1500);
+    return () => clearTimeout(t);
+  }, []);
+}
+
+function usePaletteShortcut() {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        const ui = useUi.getState();
+        ui.setPalette(!ui.paletteOpen);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+}
 
 export function GrainOverlay() {
   return <div aria-hidden className="grain" />;
@@ -45,6 +85,11 @@ export function AppShell() {
   const onboardingDone = useStore((s) => s.settings.onboardingDone);
   const storageOk = useStore((s) => s.ui.storageOk);
   useSmoothScroll();
+  useOverlayPrefetch();
+  usePaletteShortcut();
+  const paletteMounted = useEverOpened(useUi((s) => s.paletteOpen));
+  const expenseMounted = useEverOpened(useUi((s) => s.expenseDrawer.open));
+  const itemMounted = useEverOpened(useUi((s) => s.toBuyDrawer.open));
   return (
     <div className="grid-bg relative min-h-dvh">
       <a href="#main" className="sr-only-focusable card px-4 py-2 text-sm font-medium">
@@ -60,9 +105,10 @@ export function AppShell() {
         <AnimatedOutlet />
       </div>
       <QuickAddFab />
-      <CommandPalette />
-      <ExpenseDrawer />
-      <ItemDrawer />
+      {/* Separate boundaries so one overlay loading never blanks another that's open. */}
+      {paletteMounted && <CommandPalette />}
+      <Suspense fallback={null}>{expenseMounted && <ExpenseDrawer />}</Suspense>
+      <Suspense fallback={null}>{itemMounted && <ItemDrawer />}</Suspense>
       <Toaster />
       <GrainOverlay />
       {!onboardingDone && (

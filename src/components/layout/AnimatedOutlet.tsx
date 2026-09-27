@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { Suspense, useState } from "react";
 import { useLocation, useOutlet } from "react-router";
 import { PageSkeleton } from "@/components/ui/misc";
@@ -16,7 +16,7 @@ export function AnimatedOutlet() {
   const reduced = useReduced();
   return (
     <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo({ top: 0 })}>
-      <motion.main
+      <m.main
         id="main"
         key={pathname}
         tabIndex={-1}
@@ -29,7 +29,7 @@ export function AnimatedOutlet() {
         <Suspense fallback={<PageSkeleton />}>
           <Frozen />
         </Suspense>
-      </motion.main>
+      </m.main>
     </AnimatePresence>
   );
 }

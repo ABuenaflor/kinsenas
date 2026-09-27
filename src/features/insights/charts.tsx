@@ -55,7 +55,7 @@ export function MonthlyFlowChart({ data, animate }: { data: SeriesPoint[]; anima
       table={{ head: ["Period", "Net", "Saved", "Spent", "Unspent"], rows: data.map((d) => [d.label, formatMoney(d.net), formatMoney(d.saved), formatMoney(d.spent), formatMoney(d.unspent)]) }}
     >
       <ResponsiveContainer width="100%" height={H + 30}>
-        <ComposedChart data={data} margin={{ top: 24, right: 8, left: 0, bottom: 0 }} barGap={2} barCategoryGap="22%">
+        <ComposedChart accessibilityLayer={false} data={data} margin={{ top: 24, right: 8, left: 0, bottom: 0 }} barGap={2} barCategoryGap="22%">
           <CartesianGrid {...GRID} />
           <XAxis dataKey="label" {...AXIS} tickLine={false} />
           <YAxis {...AXIS} tickFormatter={money} width={56} tickLine={false} axisLine={false} />
@@ -126,7 +126,7 @@ export function SavingsOverTime({ data, animate }: { data: SeriesPoint[]; animat
       table={{ head: ["Period", "Saved", "Cumulative"], rows: data.map((d) => [d.label, formatMoney(d.saved), formatMoney(d.cumulativeSaved)]) }}
     >
       <ResponsiveContainer width="100%" height={H}>
-        <AreaChart data={data} margin={{ top: 28, right: 12, left: 0, bottom: 0 }}>
+        <AreaChart accessibilityLayer={false} data={data} margin={{ top: 28, right: 12, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="saved-fill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="var(--savings)" stopOpacity={0.28} />
@@ -189,7 +189,7 @@ export function WhereGrossWent({ data, bucketMeta, animate }: { data: SeriesPoin
       table={{ head: ["Period", "Gross", "Deductions", ...bucketMeta.map((b) => b.name)], rows: data.map((d) => [d.label, formatMoney(d.gross), formatMoney(d.deductions), ...bucketMeta.map((b) => formatMoney(d.m.buckets.find((x) => x.bucketId === b.id)?.allocated ?? 0))]) }}
     >
       <ResponsiveContainer width="100%" height={H}>
-        <BarChart data={rows} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
+        <BarChart accessibilityLayer={false} data={rows} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
           <ChartDefs />
           <CartesianGrid {...GRID} />
           <XAxis dataKey="label" {...AXIS} tickLine={false} />
@@ -221,7 +221,7 @@ export function SpendingByCategory({ rows, categories, animate }: { rows: { cate
         <p className="py-10 text-center text-sm text-muted">No spending in this range.</p>
       ) : (
         <ResponsiveContainer width="100%" height={Math.max(160, data.length * 34)}>
-          <BarChart data={data} layout="vertical" margin={{ top: 0, right: 64, left: 0, bottom: 0 }} barCategoryGap={6}>
+          <BarChart accessibilityLayer={false} data={data} layout="vertical" margin={{ top: 0, right: 64, left: 0, bottom: 0 }} barCategoryGap={6}>
             <XAxis type="number" hide />
             <YAxis type="category" dataKey="name" width={130} tick={{ fill: "var(--ink)", fontSize: 13 }} tickLine={false} axisLine={false} />
             <Tooltip cursor={{ fill: "var(--surface-2)" }} content={(p) => <ChartTooltip active={p.active} payload={p.payload} label={p.label} />} />
@@ -284,7 +284,7 @@ export function SpendingCalendar({ monthKey, expenses }: { monthKey: string; exp
               className="relative aspect-square rounded-[3px] border border-line"
               style={{ background: s ? `color-mix(in oklab, var(--wants) ${s * 100}%, var(--surface))` : "var(--surface)" }}
             >
-              <span className={cn("absolute left-1 top-0.5 font-mono text-[9px]", s > 0.5 ? "text-white" : "text-muted")}>{day}</span>
+              <span className="absolute left-0.5 top-0.5 rounded-[2px] bg-surface/90 px-0.5 font-mono text-[9px] leading-tight text-muted">{day}</span>
             </div>
           );
         })}

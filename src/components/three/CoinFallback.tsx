@@ -1,4 +1,4 @@
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import { m, useMotionValue, useSpring, useTransform } from "motion/react";
 import { useEffect, useRef } from "react";
 import { useReduced } from "@/hooks/useMedia";
 
@@ -36,7 +36,7 @@ export function CoinFallback({ saveSignal = 0 }: { saveSignal?: number }) {
   return (
     <div ref={ref} className="relative grid h-44 w-44 place-items-center [perspective:600px]" aria-hidden>
       <div className="absolute bottom-3 h-5 w-32 rounded-[50%] bg-ink/10 blur-md" />
-      <motion.div style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }} className="relative h-36 w-32">
+      <m.div style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }} className="relative h-36 w-32">
         {coins.map((i) => (
           <div
             key={i}
@@ -49,7 +49,7 @@ export function CoinFallback({ saveSignal = 0 }: { saveSignal?: number }) {
             }}
           />
         ))}
-        <motion.div
+        <m.div
           style={{ y: hopY, z: 30 }}
           className="absolute -top-2 left-[calc(50%-40px)] grid size-20 place-items-center rounded-full border-[3px] border-[#a8871c] font-mono text-3xl font-bold text-[#6f5710]"
         >
@@ -59,8 +59,8 @@ export function CoinFallback({ saveSignal = 0 }: { saveSignal?: number }) {
           >
             ₱
           </span>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </div>
   );
 }

@@ -93,9 +93,9 @@ export default function InsightsPage() {
           action={
             <Button
               variant="outline"
-              onClick={() => {
+              onClick={async () => {
                 const snap = useStore.getState().snapshot();
-                loadDemo();
+                await loadDemo();
                 toast("Loaded 6 months of demo data", { undo: () => useStore.getState().restore(snap) });
               }}
             >

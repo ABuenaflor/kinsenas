@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useMotionValue, useTransform } from "motion/react";
+import { AnimatePresence, m, useMotionValue, useTransform } from "motion/react";
 import { Trash2 } from "lucide-react";
 import { LabelTag } from "@/components/ui/diy";
 import { EmptyState } from "@/components/ui/misc";
@@ -39,7 +39,7 @@ function Row({ e }: { e: Expense }) {
   };
 
   return (
-    <motion.li
+    <m.li
       layout
       // Fly in from where it was added: the drawer/palette sit to the right, the inline form above.
       initial={reduced ? { opacity: 0 } : fresh === "inline" ? { opacity: 0, y: -48, scale: 0.97 } : fresh ? { opacity: 0, x: 96, y: -12, scale: 0.96 } : { opacity: 0, y: -10 }}
@@ -49,7 +49,7 @@ function Row({ e }: { e: Expense }) {
       className="relative overflow-hidden"
     >
       {fresh && (
-        <motion.span
+        <m.span
           aria-hidden
           className="pointer-events-none absolute inset-0 z-10 bg-highlight"
           initial={{ opacity: 0.45 }}
@@ -57,13 +57,13 @@ function Row({ e }: { e: Expense }) {
           transition={{ duration: 1.2, delay: 0.25 }}
         />
       )}
-      <motion.div aria-hidden style={{ opacity: bin }} className="absolute inset-y-0 right-0 flex w-28 items-center justify-end bg-danger pr-5 text-white">
+      <m.div aria-hidden style={{ opacity: bin }} className="absolute inset-y-0 right-0 flex w-28 items-center justify-end bg-danger pr-5 text-white">
         <Trash2 className="size-5" />
-      </motion.div>
-      <motion.div
-        style={{ x }}
+      </m.div>
+      <m.div
         drag="x"
         dragDirectionLock
+        style={{ x, touchAction: "pan-y" }} // horizontal swipe deletes; vertical still scrolls the page
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={{ left: 0.5, right: 0 }}
         onDragEnd={(_, info) => {
@@ -94,8 +94,8 @@ function Row({ e }: { e: Expense }) {
         <Button variant="ghost" size="icon" aria-label={`Delete ${e.note || cat?.name || "expense"}`} onClick={remove} className="mr-1 hidden text-muted hover:text-danger md:inline-flex">
           <Trash2 className="size-4" />
         </Button>
-      </motion.div>
-    </motion.li>
+      </m.div>
+    </m.li>
   );
 }
 

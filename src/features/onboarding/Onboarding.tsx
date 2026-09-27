@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Button, MagneticButton } from "@/components/ui/Button";
@@ -46,13 +46,13 @@ export default function Onboarding() {
   return (
     <div className="grid-bg fixed inset-0 z-[75] overflow-y-auto bg-bg">
       <div className="flex min-h-full items-start justify-center px-4 py-8 md:items-center">
-        <motion.div
+        <m.div
           ref={ref}
           data-layer
           role="dialog"
           aria-modal="true"
           aria-labelledby="onb-title"
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0.4, y: 16 }} // visible from the first frame (LCP), then settles
           animate={{ opacity: 1, y: 0 }}
           className="card relative w-full max-w-2xl p-6 md:p-10"
         >
@@ -68,12 +68,12 @@ export default function Onboarding() {
                 <span className="sr-only">
                   Step {i + 1}: {s}
                 </span>
-                <motion.span className="block h-full origin-left bg-ink" initial={false} animate={{ scaleX: i <= step ? 1 : 0 }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+                <m.span className="block h-full origin-left bg-ink" initial={false} animate={{ scaleX: i <= step ? 1 : 0 }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
               </li>
             ))}
           </ol>
           <AnimatePresence mode="wait" initial={false} custom={dir}>
-            <motion.div
+            <m.div
               key={step}
               initial={reduced ? { opacity: 0 } : { opacity: 0, x: 24 * dir, filter: "blur(4px)" }}
               animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
@@ -104,7 +104,7 @@ export default function Onboarding() {
                 </div>
               )}
               {step === 2 && rule && <RuleEditor rule={rule} onChange={setRule} buckets={buckets} sampleNet={monthly ? Math.round(monthly / 2) : 1000000} />}
-            </motion.div>
+            </m.div>
           </AnimatePresence>
           <div className="mt-8 flex items-center justify-between gap-3">
             <Button variant="ghost" onClick={() => go(-1)} className={cn(step === 0 && "invisible")}>
@@ -118,7 +118,7 @@ export default function Onboarding() {
               </MagneticButton>
             )}
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { CalendarDays, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { cn } from "@/lib/cn";
@@ -121,7 +121,7 @@ export function MonthPicker({
       </div>
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             role="dialog"
             aria-label={`Choose ${label.toLowerCase()}`}
             initial={{ opacity: 0, y: -4, scale: 0.98 }}
@@ -169,7 +169,7 @@ export function MonthPicker({
                 );
               })}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

@@ -67,7 +67,7 @@ export function ItemCard({ item, bucket, actions, dragHandle, confettiKey }: { i
         <div className={cn(polaroid ? "px-1 pt-3" : "p-4")}>
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <h3 className={cn("truncate text-lg font-semibold leading-tight", polaroid && "font-hand text-2xl font-semibold")}>{item.name}</h3>
+              <h2 className={cn("truncate text-lg font-semibold leading-tight", polaroid && "font-hand text-2xl font-semibold")}>{item.name}</h2>
               <p className="money text-sm text-muted">{formatMoney(item.targetPrice)}</p>
             </div>
             <div className="flex shrink-0 items-center gap-1">

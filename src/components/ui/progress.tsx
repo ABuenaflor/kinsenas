@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { useEffect, useState } from "react";
 import { useReduced } from "@/hooks/useMedia";
 import { cn } from "@/lib/cn";
@@ -35,7 +35,7 @@ export function ProgressBar({
       aria-valuetext={pctNow === undefined ? "spent with no budget" : `${pctNow}%${over ? " (over budget)" : ""}`}
       className={cn("relative h-2.5 w-full overflow-hidden rounded-full", track && "bg-surface-2", className)}
     >
-      <motion.div
+      <m.div
         className="absolute inset-y-0 left-0 w-full origin-left rounded-full"
         style={{ background: color }}
         initial={{ scaleX: 0 }}
@@ -44,7 +44,7 @@ export function ProgressBar({
       />
       {over && (
         <>
-          <motion.div
+          <m.div
             className="hatch absolute inset-y-0 right-0 origin-left rounded-r-full"
             style={{ left: `${budgetEnd * 100}%` }}
             initial={{ scaleX: 0 }}
@@ -87,7 +87,7 @@ export function ProgressRing({
     >
       <svg width={size} height={size} className="-rotate-90">
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--surface-2)" strokeWidth={stroke} />
-        <motion.circle
+        <m.circle
           cx={size / 2}
           cy={size / 2}
           r={r}
@@ -134,7 +134,7 @@ export function PaperConfetti({ fire }: { fire: number }) {
                 const angle = rng() * Math.PI * 2;
                 const dist = 60 + rng() * 110;
                 return (
-                  <motion.span
+                  <m.span
                     key={i}
                     className="absolute block"
                     style={{

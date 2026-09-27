@@ -14,12 +14,15 @@ npm run dev        # http://localhost:5173
 | Script | What it does |
 |---|---|
 | `npm run dev` | Dev server |
-| `npm test` | Vitest (domain math, §17 acceptance cases, store) |
+| `npm test` | Vitest (domain math, §17 acceptance cases, store, UI) |
+| `npm run lint` | ESLint (TypeScript, React hooks, jsx-a11y) |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run build` | Typecheck + production build to `dist/` |
 | `npm run preview` | Serve the production build |
 
 Want sample data? Settings → Data → **Load demo data** (6 months, deterministic).
+
+Deploys as a static site (see `vercel.json` for SPA routing and caching).
 
 Optional 3D hero: set `VITE_SPLINE_SCENE_URL` in `.env` (see `.env.example`). Without it, a hand-built CSS coin stack is shown.
 

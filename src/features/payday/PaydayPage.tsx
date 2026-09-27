@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useAnimationControls } from "motion/react";
+import { AnimatePresence, m, useAnimationControls } from "motion/react";
 import { useEffect, useState } from "react";
 import { PeriodSwitcher } from "@/components/layout/PeriodSwitcher";
 import { Hero3D } from "@/components/three/Hero3D";
@@ -95,7 +95,7 @@ export default function PaydayPage() {
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         <CutoffInputCard draft={draft} update={update} preview={preview} editing={!!existing} legacy={!!existing && !existing.basis} dirty={dirty} onSave={save} />
-        <motion.div animate={shakeControls} className="lg:sticky lg:top-28">
+        <m.div animate={shakeControls} className="lg:sticky lg:top-28">
           <Receipt
             title={`${halfLabel(half, paydays)} cutoff`}
             subtitle={`${shortDate(payDateOf(draft.cutoffId, paydays))} · ${preview.rule?.name ?? ""}`}
@@ -113,7 +113,7 @@ export default function PaydayPage() {
               </AnimatePresence>
             }
           />
-        </motion.div>
+        </m.div>
       </div>
 
       <section className="mt-10" aria-label="Envelopes">

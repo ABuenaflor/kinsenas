@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { CutoffId } from "@/domain/types";
 import { defaultCutoffToLog, periodOf, todayISO } from "@/lib/periods";
-import { generateDemoData } from "@/dev/demoData";
 import { defaultData } from "./defaults";
 import { migrate, STORE_KEY, STORE_VERSION } from "./migrations";
 import { expensesSlice, type ExpensesSlice } from "./slices/expenses";
@@ -27,7 +26,8 @@ interface CoreSlice {
   /** Union by id; with includeSettings also adopt the backup's paydays, salary, rates and gov settings (keeps your theme/motion). */
   mergeData: (data: AppData, opts?: { includeSettings?: boolean }) => void;
   resetAll: () => void;
-  loadDemo: () => void;
+  /** Replace data with seeded demo data (the generator is loaded on demand). */
+  loadDemo: () => Promise<void>;
 }
 
 export type Store = AppData & CoreSlice & SettingsSlice & PaydaySlice & ExpensesSlice & ToBuySlice;
@@ -75,7 +75,8 @@ export const useStore = create<Store>()(
           toBuy: mergeById(s.toBuy, data.toBuy),
         })),
       resetAll: () => set({ ...defaultData(), ui: { ...get().ui, period: initialPeriod() } }),
-      loadDemo: () => {
+      loadDemo: async () => {
+        const { generateDemoData } = await import("@/dev/demoData");
         const s = get();
         const demo = generateDemoData(todayISO(), s.settings.paydays);
         set({

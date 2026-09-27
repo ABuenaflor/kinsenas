@@ -6,10 +6,17 @@
 
 ## 0. Implementation notes (decisions made while building v1)
 
-- Installed majors are newer than when this spec was written: Vite 8, TypeScript 7, Motion 13, Zod 4, Recharts 3, Tailwind 4. React Router is pinned to **v7** as specified.
+- Installed majors are newer than when this spec was written: Vite 8, Motion 13, Zod 4, Recharts 3, Tailwind 4, ESLint 9. React Router is pinned to **v7** as specified. TypeScript is **6.0** (not 7): typescript-eslint doesn't support the TS 7 native compiler yet.
 - `@/` path alias → `src/`.
 - Lenis smooth scroll is wired but off by default.
 - Hand-built primitives only; no Radix was needed.
+- **Edit vs Re-apply (§12.1):** each saved cutoff stores a `basis` (rates, gov settings, applicable custom deductions, rule, buckets). Editing recomputes with that basis; only "Re-apply current rules" swaps in current settings. Store schema v2; cutoffs saved under v1 have no basis and edit with current settings.
+- **Payday default:** opens on the most recent unlogged payday (looks back one month), else the current cutoff.
+- **Motion** loads through `<LazyMotion>` with async `domMax` features; use `m.*` components, not `motion.*`.
+- **Fonts** are self-hosted in `public/fonts` (SIL OFL) with preloads; no third-party font CSS.
+- **Initial load:** static boot shell in `index.html`; a build plugin (`vite.config.ts`) modulepreloads the current route's chunk, Motion features, and onboarding (first run only). Drawers are lazy and idle-prefetched; the ⌘K palette is in the main bundle so it takes keystrokes instantly.
+- **Measured (Lighthouse, production build):** Accessibility 99–100 and Best Practices 100 on every page; desktop Performance 98–99; mobile (simulated slow 4G) Performance ~80–88, below the §15 target of 90. What remains is download time for React + React Router before first render; closing the gap would need prerendering/SSR.
+- `npm run lint` = ESLint (typescript-eslint, react-hooks, jsx-a11y).
 
 ---
 

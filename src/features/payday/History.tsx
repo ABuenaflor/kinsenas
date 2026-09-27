@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { Pencil, RotateCcw, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
@@ -76,7 +76,7 @@ function CutoffDrawer({ cutoff, onClose }: { cutoff: Cutoff | null; onClose: () 
         {cutoff && (
           <div className="space-y-4">
             {showDiff && (
-              <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="rounded-md border border-line bg-surface-2 p-4 text-sm">
+              <m.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="rounded-md border border-line bg-surface-2 p-4 text-sm">
                 {diff.length === 0 ? (
                   <p>Nothing would change — this cutoff already matches your current rules.</p>
                 ) : (
@@ -118,7 +118,7 @@ function CutoffDrawer({ cutoff, onClose }: { cutoff: Cutoff | null; onClose: () 
                     </div>
                   </>
                 )}
-              </motion.div>
+              </m.div>
             )}
             <Receipt
               title={`${halfLabel(cutoff.half, paydays)} cutoff`}
@@ -188,7 +188,7 @@ export function History() {
               </TapeLabel>
               <ul className="card divide-y divide-line overflow-hidden p-0">
                 {rows.map(({ c, saved }) => (
-                  <motion.li key={c.id} layout>
+                  <m.li key={c.id} layout>
                     <button
                       type="button"
                       onClick={() => setOpenId(c.id)}
@@ -214,7 +214,7 @@ export function History() {
                         <MiniSplit c={c} />
                       </span>
                     </button>
-                  </motion.li>
+                  </m.li>
                 ))}
               </ul>
             </div>

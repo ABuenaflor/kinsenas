@@ -88,7 +88,7 @@ function GovCard({ g }: { g: GovDeduction }) {
 export function GovDeductionsEditor() {
   const gov = useStore((s) => s.govDeductions);
   return (
-    <div className="grid gap-3 md:grid-cols-2">
+    <div className="grid gap-3 xl:grid-cols-2">
       {gov.map((g) => (
         <GovCard key={g.id} g={g} />
       ))}

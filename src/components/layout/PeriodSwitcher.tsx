@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { useState } from "react";
 import { BlurHeading } from "@/components/ui/misc";
 import { cn } from "@/lib/cn";
@@ -24,7 +24,7 @@ export function PeriodSwitcher({ className }: { className?: string }) {
       </button>
       <div className="relative min-w-[11.5rem] overflow-hidden text-center">
         <AnimatePresence mode="popLayout" initial={false} custom={dir}>
-          <motion.span
+          <m.span
             key={period}
             custom={dir}
             initial={{ opacity: 0, x: dir * 16 }}
@@ -35,7 +35,7 @@ export function PeriodSwitcher({ className }: { className?: string }) {
             aria-live="polite"
           >
             {cutoffLabel(period, paydays)}
-          </motion.span>
+          </m.span>
         </AnimatePresence>
       </div>
       <button type="button" aria-label="Next cutoff" onClick={() => go(nextCutoffId(period), 1)} className="grid size-10 place-items-center rounded-full text-muted hover:bg-surface hover:text-ink">

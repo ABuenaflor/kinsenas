@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { Gift, Plus, ReceiptText, Wallet } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
@@ -37,7 +37,7 @@ export function QuickAddFab() {
     <div ref={ref} className="fixed bottom-[calc(96px+env(safe-area-inset-bottom))] right-4 z-50 flex flex-col items-end gap-2 md:bottom-8 md:right-8">
       <AnimatePresence>
         {open && (
-          <motion.ul
+          <m.ul
             id="quick-add-menu"
             className="flex flex-col items-end gap-2"
             initial="hidden"
@@ -46,7 +46,7 @@ export function QuickAddFab() {
             variants={{ hidden: { transition: { staggerChildren: 0.03, staggerDirection: -1 } }, show: { transition: { staggerChildren: 0.04, staggerDirection: -1 } } }}
           >
             {actions.map((a) => (
-              <motion.li
+              <m.li
                 key={a.label}
                 variants={{ hidden: { opacity: 0, y: 12, scale: 0.9 }, show: { opacity: 1, y: 0, scale: 1 } }}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -61,12 +61,12 @@ export function QuickAddFab() {
                 >
                   <a.icon className="size-4" aria-hidden />+ {a.label}
                 </button>
-              </motion.li>
+              </m.li>
             ))}
-          </motion.ul>
+          </m.ul>
         )}
       </AnimatePresence>
-      <motion.button
+      <m.button
         type="button"
         aria-label={open ? "Close quick add" : "Quick add"}
         aria-expanded={open}
@@ -75,10 +75,10 @@ export function QuickAddFab() {
         whileTap={{ scale: 0.92 }}
         className={cn("grid size-14 place-items-center rounded-full bg-highlight text-[#1a1916] shadow-drawer", open && "bg-accent text-accent-ink")}
       >
-        <motion.span animate={{ rotate: open ? 45 : 0 }} transition={{ type: "spring", stiffness: 500, damping: 25 }}>
+        <m.span animate={{ rotate: open ? 45 : 0 }} transition={{ type: "spring", stiffness: 500, damping: 25 }}>
           <Plus className="size-6" strokeWidth={2.4} />
-        </motion.span>
-      </motion.button>
+        </m.span>
+      </m.button>
     </div>
   );
 }

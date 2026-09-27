@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useDragControls } from "motion/react";
+import { AnimatePresence, m, useDragControls } from "motion/react";
 import { X } from "lucide-react";
 import { useId, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
@@ -10,7 +10,7 @@ import { TextInput } from "./inputs";
 
 function Backdrop({ onClick }: { onClick: () => void }) {
   return (
-    <motion.div
+    <m.div
       aria-hidden
       className="fixed inset-0 z-[70] bg-[rgb(20_19_17/0.38)] backdrop-blur-[2px]"
       initial={{ opacity: 0 }}
@@ -48,7 +48,7 @@ function DrawerPanel({ onClose, title, description, children, footer, className 
       : { initial: { y: "100%" }, animate: { y: 0 }, exit: { y: "100%" } };
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       data-layer
       role="dialog"
@@ -83,7 +83,7 @@ function DrawerPanel({ onClose, title, description, children, footer, className 
           <span className="h-1.5 w-10 rounded-full bg-line" />
         </div>
       )}
-      <header className={cn("flex items-start justify-between gap-3 px-5", desktop ? "pt-5" : "pt-1")}>
+      <div className={cn("flex items-start justify-between gap-3 px-5", desktop ? "pt-5" : "pt-1")}>
         <div className="min-w-0">
           <h2 id={titleId} className="font-display text-2xl leading-tight">
             {title}
@@ -97,10 +97,10 @@ function DrawerPanel({ onClose, title, description, children, footer, className 
         <Button variant="ghost" size="icon" aria-label="Close" onClick={onClose} className="-mr-2 -mt-1">
           <X className="size-5" />
         </Button>
-      </header>
+      </div>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4">{children}</div>
-      {footer && <footer className="flex shrink-0 flex-wrap justify-end gap-2 border-t border-line px-5 py-3 pb-[max(12px,env(safe-area-inset-bottom))]">{footer}</footer>}
-    </motion.div>
+      {footer && <div className="flex shrink-0 flex-wrap justify-end gap-2 border-t border-line px-5 py-3 pb-[max(12px,env(safe-area-inset-bottom))]">{footer}</div>}
+    </m.div>
   );
 }
 
@@ -126,7 +126,7 @@ function DialogPanel({ onClose, title, description, children, footer, className 
   useFocusTrap(ref, true, onClose);
   return (
     <div className="pointer-events-none fixed inset-0 z-[71] grid place-items-center p-4">
-      <motion.div
+      <m.div
         ref={ref}
         data-layer
         role="dialog"
@@ -150,7 +150,7 @@ function DialogPanel({ onClose, title, description, children, footer, className 
         )}
         {children && <div className="mt-4">{children}</div>}
         {footer && <div className="mt-6 flex flex-wrap justify-end gap-2">{footer}</div>}
-      </motion.div>
+      </m.div>
     </div>
   );
 }

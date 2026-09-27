@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { useId, useRef, type KeyboardEvent, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
@@ -61,7 +61,7 @@ export function Tabs<T extends string>({
           >
             {t.label}
             {active && (
-              <motion.span layoutId={underline} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-ink" transition={{ type: "spring", stiffness: 500, damping: 38 }} />
+              <m.span layoutId={underline} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-ink" transition={{ type: "spring", stiffness: 500, damping: 38 }} />
             )}
           </button>
         );

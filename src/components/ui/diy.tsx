@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import type { CSSProperties, ReactNode } from "react";
 import { useReduced } from "@/hooks/useMedia";
 import { cn } from "@/lib/cn";
@@ -63,7 +63,7 @@ export function Sticker({
       </span>
     );
   return (
-    <motion.button
+    <m.button
       type="button"
       onClick={onClick}
       className={common}
@@ -74,7 +74,7 @@ export function Sticker({
       {...rest}
     >
       {children}
-    </motion.button>
+    </m.button>
   );
 }
 
@@ -87,7 +87,7 @@ const SPLATTER: [number, number, number][] = [
 export function Stamp({ label = "PAID ✓", sub, className }: { label?: string; sub?: string; className?: string }) {
   const reduced = useReduced();
   return (
-    <motion.div
+    <m.div
       aria-hidden
       initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 1.8, rotate: -24 }}
       animate={reduced ? { opacity: 0.9 } : { opacity: 0.9, scale: 1, rotate: -12 }}
@@ -99,7 +99,7 @@ export function Stamp({ label = "PAID ✓", sub, className }: { label?: string; 
       {sub && <div className="font-mono text-[10px] tracking-[0.2em]">{sub}</div>}
       {!reduced &&
         SPLATTER.map(([x, y, r], i) => (
-          <motion.span
+          <m.span
             key={i}
             className="absolute rounded-full bg-danger"
             style={{ left: `${x}%`, top: `${y}%`, width: r, height: r }}
@@ -108,7 +108,7 @@ export function Stamp({ label = "PAID ✓", sub, className }: { label?: string; 
             transition={{ duration: 1.1, delay: 0.12 + i * 0.02, times: [0, 0.2, 1] }}
           />
         ))}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -136,7 +136,7 @@ export function HandStroke({
   const s = STROKES[kind];
   return (
     <svg aria-hidden viewBox={s.viewBox} fill="none" className={cn("pointer-events-none overflow-visible", className)} preserveAspectRatio="none">
-      <motion.path
+      <m.path
         d={s.d}
         stroke={color}
         strokeWidth={width}
@@ -155,7 +155,7 @@ export function HandStroke({
 /** Handwritten margin note (max one per screen). */
 export function MarginNote({ children, className, arrow = "left" }: { children: ReactNode; className?: string; arrow?: "left" | "down" | "none" }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6, duration: 0.4 }}
@@ -164,6 +164,6 @@ export function MarginNote({ children, className, arrow = "left" }: { children: 
       {arrow === "left" && <HandStroke kind="arrow" className="h-6 w-10 -scale-x-100" color="var(--muted)" width={2} delay={0.8} />}
       <span className="-rotate-2">{children}</span>
       {arrow === "down" && <HandStroke kind="arrow" className="h-7 w-10 rotate-45" color="var(--muted)" width={2} delay={0.8} />}
-    </motion.div>
+    </m.div>
   );
 }

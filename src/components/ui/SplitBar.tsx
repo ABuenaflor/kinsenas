@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { cn } from "@/lib/cn";
 import { formatBps } from "@/lib/money";
@@ -67,7 +67,7 @@ export function SplitBar({
         {segments.map((s, i) => {
           const width = (s.percent / scale) * 100;
           return (
-            <motion.div
+            <m.div
               key={s.id}
               layout
               transition={{ type: "spring", stiffness: 500, damping: 40 }}
@@ -75,9 +75,9 @@ export function SplitBar({
               style={{ width: `${width}%`, background: s.color }}
             >
               {width > 9 && (
-                <span className="money truncate px-1 text-xs font-semibold drop-shadow-[0_1px_0_rgb(0_0_0/0.25)]">{formatBps(s.percent)}</span>
+                <span className="money truncate rounded-[4px] bg-surface/90 px-1.5 py-0.5 text-xs font-semibold text-ink">{formatBps(s.percent)}</span>
               )}
-            </motion.div>
+            </m.div>
           );
         })}
         {segments.slice(0, -1).map((s, i) => {
@@ -105,13 +105,13 @@ export function SplitBar({
               className="absolute top-1/2 z-10 grid h-16 w-11 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize touch-none place-items-center"
               style={{ left: `${left}%` }}
             >
-              <motion.span
+              <m.span
                 animate={{ scale: dragging === i ? 1.15 : 1 }}
                 transition={{ type: "spring", stiffness: 500, damping: 18 }}
                 className="flex h-10 w-3 items-center justify-center rounded-full border-2 border-surface bg-ink shadow-md"
               >
                 <span className="h-4 w-px bg-surface/70" />
-              </motion.span>
+              </m.span>
             </div>
           );
         })}

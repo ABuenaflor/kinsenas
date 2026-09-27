@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { cn } from "@/lib/cn";
 import { formatBps, formatMoney } from "@/lib/money";
 import type { Centavos } from "@/domain/types";
@@ -26,7 +26,7 @@ export function Envelope({
   const f = Math.max(0, Math.min(1, fill));
   return (
     <div className={cn("card relative overflow-hidden p-0", className)}>
-      <motion.div
+      <m.div
         aria-hidden
         className="absolute inset-x-0 bottom-0 h-full origin-bottom"
         style={{ background: `color-mix(in oklab, ${color} 16%, transparent)` }}
@@ -45,7 +45,7 @@ export function Envelope({
         <div className="mt-3 text-xl font-semibold md:text-2xl" title={formatMoney(amount)}>
           <NumberTicker value={amount} />
         </div>
-        {caption && <p className="mt-0.5 text-xs text-muted">{caption}</p>}
+        {caption && <p className="mt-0.5 text-xs text-ink/80">{caption}</p>}
       </div>
       <span aria-hidden className="absolute bottom-0 left-0 h-1 w-full" style={{ background: color }} />
     </div>

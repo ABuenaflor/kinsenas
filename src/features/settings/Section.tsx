@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { useId, useState, type ReactNode } from "react";
 import { useIsDesktop } from "@/hooks/useMedia";
@@ -17,9 +17,9 @@ export function Section({ id, title, description, children }: { id: string; titl
         ) : (
           <button type="button" aria-expanded={open} aria-controls={bodyId} onClick={() => setOpen((o) => !o)} className="flex min-h-14 w-full items-center justify-between px-5 text-left">
             {title}
-            <motion.span animate={{ rotate: open ? 180 : 0 }}>
+            <m.span animate={{ rotate: open ? 180 : 0 }}>
               <ChevronDown className="size-5 text-muted" />
-            </motion.span>
+            </m.span>
           </button>
         )}
       </h2>

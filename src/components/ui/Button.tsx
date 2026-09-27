@@ -1,4 +1,4 @@
-import { motion, useMotionValue, useSpring, type HTMLMotionProps } from "motion/react";
+import { m, useMotionValue, useSpring, type HTMLMotionProps } from "motion/react";
 import { forwardRef, type ReactNode } from "react";
 import { useFinePointer, useReduced } from "@/hooks/useMedia";
 import { cn } from "@/lib/cn";
@@ -17,7 +17,7 @@ const variants: Record<Variant, string> = {
   highlight: "bg-highlight text-[#1a1916] hover:brightness-95",
   ghost: "bg-transparent text-ink hover:bg-surface-2",
   outline: "bg-transparent text-ink border border-line hover:border-ink",
-  danger: "bg-danger text-white hover:opacity-90",
+  danger: "bg-danger text-[var(--danger-ink)] hover:opacity-90",
 };
 const sizes: Record<Size, string> = {
   sm: "min-h-9 px-3 text-sm gap-1.5 rounded-[10px]",
@@ -31,7 +31,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   ref,
 ) {
   return (
-    <motion.button
+    <m.button
       ref={ref}
       type={type}
       whileTap={props.disabled ? undefined : { scale: 0.97 }}

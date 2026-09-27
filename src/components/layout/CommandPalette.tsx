@@ -1,6 +1,6 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { CornerDownLeft, Gift, Moon, ReceiptText, Search, Wallet, type LucideIcon } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router";
 import { LabelTag } from "@/components/ui/diy";
@@ -84,7 +84,7 @@ function Palette({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[81] flex justify-center px-4 pt-[12vh]">
-      <motion.div
+      <m.div
         ref={ref}
         data-layer
         role="dialog"
@@ -152,29 +152,20 @@ function Palette({ onClose }: { onClose: () => void }) {
           ))}
           {commands.length === 0 && <li className="px-3 py-6 text-center text-sm text-muted">Nothing matches. Try “250 lunch”.</li>}
         </ul>
-      </motion.div>
+      </m.div>
     </div>
   );
 }
 
-export function CommandPalette() {
+/** Lazy-loaded on first open; the Ctrl/⌘+K shortcut lives in AppShell. */
+export default function CommandPalette() {
   const open = useUi((s) => s.paletteOpen);
   const setPalette = useUi((s) => s.setPalette);
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        setPalette(!useUi.getState().paletteOpen);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [setPalette]);
   return createPortal(
     <AnimatePresence>
       {open && (
         <>
-          <motion.div
+          <m.div
             key="bd"
             className="fixed inset-0 z-[80] bg-[rgb(20_19_17/0.3)] backdrop-blur-[2px]"
             initial={{ opacity: 0 }}

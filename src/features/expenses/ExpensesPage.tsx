@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { Download } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PageHeader, PeriodSwitcher } from "@/components/layout/PeriodSwitcher";
@@ -155,13 +155,13 @@ export default function ExpensesPage() {
                       </span>
                     </div>
                     <ProgressBar value={b.allocated ? used / b.allocated : used > 0 ? Infinity : 0} color={b.color} label={`${b.name} spent`} />
-                    <motion.p
+                    <m.p
                       key={over ? "over" : "ok"}
                       animate={over ? { x: [0, -4, 4, -2, 0] } : undefined}
                       className={cn("money mt-1 text-xs", over ? "text-danger" : "text-muted")}
                     >
                       {over ? `${formatMoney(-b.remaining)} over` : `${formatMoney(b.remaining)} left`}
-                    </motion.p>
+                    </m.p>
                   </li>
                 );
               })}
@@ -190,6 +190,7 @@ export default function ExpensesPage() {
               <Download className="size-4" /> CSV
             </Button>
           </div>
+          <h2 className="sr-only">Transactions</h2>
           <ExpenseList days={view.days} />
         </div>
         <Card className="lg:sticky lg:top-28">

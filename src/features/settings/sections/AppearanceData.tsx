@@ -155,8 +155,7 @@ export function DataEditor() {
         description="This replaces your current data with 6 months of sample paydays and expenses. You can undo right after."
         onConfirm={() => {
           const snap = useStore.getState().snapshot();
-          loadDemo();
-          toast("Demo data loaded", { undo: () => useStore.getState().restore(snap) });
+          void loadDemo().then(() => toast("Demo data loaded", { undo: () => useStore.getState().restore(snap) }));
         }}
       />
       <ConfirmDialog

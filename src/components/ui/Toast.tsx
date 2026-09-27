@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { Check, Undo2, X } from "lucide-react";
 import { useEffect } from "react";
 import { create } from "zustand";
@@ -37,7 +37,7 @@ function ToastRow({ t }: { t: ToastItem }) {
     return () => clearTimeout(timer);
   }, [t.id, t.undo, dismiss]);
   return (
-    <motion.li
+    <m.li
       layout
       initial={{ opacity: 0, y: 16, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -62,7 +62,7 @@ function ToastRow({ t }: { t: ToastItem }) {
       <button type="button" aria-label="Dismiss" className="grid size-10 place-items-center rounded-full opacity-70 hover:opacity-100" onClick={() => dismiss(t.id)}>
         <X className="size-4" />
       </button>
-    </motion.li>
+    </m.li>
   );
 }
 

@@ -10,7 +10,7 @@ import { useUi } from "@/store/useUi";
 import { ExpenseForm, initialForm, useRecentCategories, type ExpenseFormValue } from "./ExpenseForm";
 
 /** Global add/edit expense drawer (FAB, ⌘K, list rows, mobile quick add). */
-export function ExpenseDrawer() {
+export default function ExpenseDrawer() {
   const drawer = useUi((s) => s.expenseDrawer);
   const { open, editing, prefill } = drawer;
   const close = useUi((s) => s.closeExpense);
