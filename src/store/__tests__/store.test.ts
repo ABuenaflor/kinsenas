@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { allocateAmounts } from "@/domain/allocation";
+import { allocateAmounts, presetShares } from "@/domain/allocation";
 import { generateDemoData } from "@/dev/demoData";
 import { defaultData } from "../defaults";
 import { migrate, STORE_VERSION } from "../migrations";
@@ -29,6 +29,52 @@ describe("store", () => {
     expect(after?.net).not.toBe(before.net);
     const net = after?.net ?? 0;
     expect(after?.allocations.map((a) => a.amount)).toEqual(allocateAmounts(net, useStore.getState().rules[0]!.shares));
+  });
+
+  it("editing a saved cutoff reuses the rates, deductions and rule it was saved with", () => {
+    const s = useStore.getState();
+    s.updateSettings({ monthlyBasicSalary: P(30000) });
+    s.upsertCustomDeduction({ id: "loan", name: "Loan", kind: "fixed", amount: P(500), percent: 0, schedule: "every", active: true, order: 0 });
+    const ruleId = s.settings.activeRuleId;
+    const first = useStore.getState().saveCutoff({ cutoffId: "2026-09-A", gross: P(15000), govAlreadyDeducted: false, ruleId }).cutoff;
+    expect(first.basis?.govRates.sss.employeeRate).toBe(500);
+
+    // Settings change after saving…
+    const st = useStore.getState();
+    st.setGovRates({ ...st.govRates, sss: { ...st.govRates.sss, employeeRate: 600 } });
+    st.removeCustomDeduction("loan");
+    st.updateSettings({ monthlyBasicSalary: P(50000) });
+    const rule = st.rules[0]!;
+    st.upsertRule({ ...rule, shares: rule.shares.map((sh, i) => ({ ...sh, percent: [7000, 2000, 1000][i]! })) });
+
+    // …then fix a typo in the saved cutoff: same gross, only the note changes.
+    const edited = useStore.getState().saveCutoff({ cutoffId: "2026-09-A", gross: P(15000), govAlreadyDeducted: false, ruleId, note: "typo fixed" }).cutoff;
+    expect(edited.deductions).toEqual(first.deductions);
+    expect(edited.allocations).toEqual(first.allocations);
+    expect(edited.net).toBe(P(12771.3)); // §17 A minus insurance: still the old rates, loan and 50/30/20
+
+    // Changing gross while editing still uses the stored basis.
+    const bigger = useStore.getState().saveCutoff({ cutoffId: "2026-09-A", gross: P(16000), govAlreadyDeducted: false, ruleId }).cutoff;
+    expect(bigger.deductions.find((d) => d.key === "gov:sss")?.amount).toBe(P(750));
+    expect(bigger.deductions.some((d) => d.key === "custom:loan")).toBe(true);
+
+    // Re-apply swaps in the current settings and a new basis.
+    useStore.getState().reapplyCutoff("2026-09-A");
+    const reapplied = useStore.getState().cutoffs.find((c) => c.id === "2026-09-A");
+    expect(reapplied?.deductions.find((d) => d.key === "gov:sss")?.amount).toBe(P(1050));
+    expect(reapplied?.deductions.some((d) => d.key === "custom:loan")).toBe(false);
+    expect(reapplied?.basis?.govRates.sss.employeeRate).toBe(600);
+  });
+
+  it("picking a different rule while editing uses that rule as it is now", () => {
+    const s = useStore.getState();
+    const other = { id: "r-701010", name: "70/20/10", shares: presetShares(["savings", "essentials", "wants"], [7000, 2000, 1000]) };
+    s.upsertRule(other);
+    const saved = s.saveCutoff({ cutoffId: "2026-09-A", gross: P(15000), govAlreadyDeducted: false, ruleId: s.settings.activeRuleId }).cutoff;
+    const edited = useStore.getState().saveCutoff({ cutoffId: "2026-09-A", gross: P(15000), govAlreadyDeducted: false, ruleId: other.id }).cutoff;
+    expect(edited.net).toBe(saved.net);
+    expect(edited.ruleId).toBe(other.id);
+    expect(edited.allocations.map((a) => a.amount)).toEqual(allocateAmounts(saved.net, other.shares));
   });
 
   it("auto set-asides are created when a cutoff is saved, once", () => {
@@ -74,7 +120,12 @@ describe("persistence", () => {
   it("migrates a v0 blob by filling defaults", () => {
     const m = migrate({ cutoffs: [] }, 0);
     expect(m.buckets).toEqual(defaultData().buckets);
-    expect(STORE_VERSION).toBe(1);
+    expect(STORE_VERSION).toBe(2);
+  });
+  it("migrates v1 → v2 keeping cutoffs without a basis", () => {
+    const v1 = { ...defaultData(), cutoffs: [{ id: "2026-09-A", gross: 100 }] };
+    const m = migrate(v1, 1);
+    expect(m.cutoffs).toEqual(v1.cutoffs);
   });
   it("export → import round-trips and reports bad fields", () => {
     const demo = generateDemoData("2026-09-27", { first: 15, second: "last" });
@@ -87,6 +138,16 @@ describe("persistence", () => {
     expect(rb.ok).toBe(false);
     if (!rb.ok) expect(rb.error).toMatch(/^data\.expenses\.0\.amount/);
     expect(parseImport("nope").ok).toBe(false);
+  });
+  it("merge keeps current settings unless asked to include them", () => {
+    const backup = generateDemoData("2026-09-27", { first: 10, second: 25 });
+    useStore.getState().mergeData(backup);
+    expect(useStore.getState().settings.paydays).toEqual({ first: 15, second: "last" });
+    expect(useStore.getState().cutoffs.length).toBe(backup.cutoffs.length);
+    useStore.getState().updateSettings({ theme: "workbench" });
+    useStore.getState().mergeData(backup, { includeSettings: true });
+    expect(useStore.getState().settings.paydays).toEqual({ first: 10, second: 25 });
+    expect(useStore.getState().settings.theme).toBe("workbench");
   });
   it("demo data is deterministic and sized as spec'd", () => {
     const a = generateDemoData("2026-09-27", { first: 15, second: "last" });

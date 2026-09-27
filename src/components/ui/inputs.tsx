@@ -11,7 +11,7 @@ import {
   type SelectHTMLAttributes,
 } from "react";
 import { cn } from "@/lib/cn";
-import { formatBps, parseBps, parseMoney } from "@/lib/money";
+import { parseBps, parseMoney } from "@/lib/money";
 import type { Bps, Centavos } from "@/domain/types";
 
 /* ---------------- Field ---------------- */
@@ -154,7 +154,6 @@ export function PercentInput({
           }
         }}
         onBlur={() => setText((last.current / 100).toString())}
-        aria-valuetext={formatBps(value)}
         {...props}
       />
       <span aria-hidden className="money text-muted">

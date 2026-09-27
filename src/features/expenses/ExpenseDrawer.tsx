@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/overlays";
 import { toast } from "@/components/ui/Toast";
@@ -11,16 +11,19 @@ import { ExpenseForm, initialForm, useRecentCategories, type ExpenseFormValue } 
 
 /** Global add/edit expense drawer (FAB, ⌘K, list rows, mobile quick add). */
 export function ExpenseDrawer() {
-  const { open, editing, prefill } = useUi((s) => s.expenseDrawer);
+  const drawer = useUi((s) => s.expenseDrawer);
+  const { open, editing, prefill } = drawer;
   const close = useUi((s) => s.closeExpense);
   const categories = useRecentCategories();
   const [value, setValue] = useState<ExpenseFormValue>(() => initialForm(useStore.getState().settings.paydays));
 
   const paydays = useStore((s) => s.settings.paydays);
-  // Reset only when the drawer opens or its target changes (not when categories re-sort).
-  useEffect(() => {
-    if (open) setValue(initialForm(paydays, editing, prefill, categories[0]));
-  }, [open, editing, prefill]);
+  // Each open (openExpense makes a new drawer object) starts from a fresh form.
+  const [openedFor, setOpenedFor] = useState<typeof drawer | null>(null);
+  if (open && openedFor !== drawer) {
+    setOpenedFor(drawer);
+    setValue(initialForm(paydays, editing, prefill, categories[0]));
+  }
 
   const submit = () => {
     if (value.amount === null) return;
@@ -39,7 +42,8 @@ export function ExpenseDrawer() {
       close();
       toast("Expense updated", { tone: "success", undo: () => useStore.getState().restore(snap) });
     } else {
-      s.addExpense({ ...payload, cutoffId: value.cutoffOverride ?? undefined });
+      const added = s.addExpense({ ...payload, cutoffId: value.cutoffOverride ?? undefined });
+      useUi.getState().markAdded(added.id, "drawer");
       toast(`Added ${formatMoney(value.amount)} · ${bucket}`, { tone: "success", undo: () => useStore.getState().restore(snap) });
       setValue((v) => ({ ...v, amount: null, note: "" }));
     }

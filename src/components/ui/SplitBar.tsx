@@ -59,7 +59,8 @@ export function SplitBar({
     e.preventDefault();
   };
 
-  let cum = 0;
+  // Cumulative percent at each handle (between segment i and i + 1).
+  const boundaries = segments.slice(0, -1).map((_, i) => segments.slice(0, i + 1).reduce((s, x) => s + x.percent, 0));
   return (
     <div className={cn("select-none", className)}>
       <div ref={barRef} className="relative flex h-14 w-full overflow-visible rounded-md bg-surface-2">
@@ -80,7 +81,7 @@ export function SplitBar({
           );
         })}
         {segments.slice(0, -1).map((s, i) => {
-          cum += s.percent;
+          const cum = boundaries[i] ?? 0;
           const left = (cum / scale) * 100;
           const next = segments[i + 1];
           return (

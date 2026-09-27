@@ -40,7 +40,6 @@ function InlineQuickAdd() {
       <SectionTitle eyebrow="Quick add" title="Log spending" />
       <ExpenseForm
         compact
-        autoFocus={false}
         value={value}
         onChange={setValue}
         submitLabel="Add"
@@ -48,7 +47,7 @@ function InlineQuickAdd() {
           if (value.amount === null) return;
           const s = useStore.getState();
           const snap = s.snapshot();
-          s.addExpense({
+          const added = s.addExpense({
             amount: value.amount,
             categoryId: value.categoryId,
             bucketId: value.bucketId,
@@ -56,6 +55,7 @@ function InlineQuickAdd() {
             note: value.note,
             cutoffId: value.cutoffOverride ?? undefined,
           });
+          useUi.getState().markAdded(added.id, "inline");
           toast(`Added ${formatMoney(value.amount)}`, { tone: "success", undo: () => useStore.getState().restore(snap) });
           setValue((v) => ({ ...v, amount: null, note: "" }));
         }}
@@ -154,7 +154,7 @@ export default function ExpensesPage() {
                         {formatMoney(b.spent)} / {formatMoney(b.allocated)}
                       </span>
                     </div>
-                    <ProgressBar value={b.allocated ? used / b.allocated : used > 0 ? 2 : 0} color={b.color} label={`${b.name} spent`} />
+                    <ProgressBar value={b.allocated ? used / b.allocated : used > 0 ? Infinity : 0} color={b.color} label={`${b.name} spent`} />
                     <motion.p
                       key={over ? "over" : "ok"}
                       animate={over ? { x: [0, -4, 4, -2, 0] } : undefined}

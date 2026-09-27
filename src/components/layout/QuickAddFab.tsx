@@ -29,7 +29,7 @@ export function QuickAddFab() {
 
   const actions = [
     { label: "Expense", icon: ReceiptText, run: () => openExpense() },
-    { label: "Payday", icon: Wallet, run: () => navigate("/", { state: { focusSalary: Date.now() } }) },
+    { label: "Payday", icon: Wallet, run: () => navigate("/", { state: { focusSalary: true } }) },
     { label: "To-Buy", icon: Gift, run: () => openToBuy() },
   ];
 

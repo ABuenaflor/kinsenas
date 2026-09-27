@@ -51,6 +51,7 @@ export function AppearanceEditor() {
 export function DataEditor() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<ExportFile | null>(null);
+  const [mergeSettings, setMergeSettings] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmDemo, setConfirmDemo] = useState(false);
   const replaceData = useStore((s) => s.replaceData);
@@ -82,7 +83,7 @@ export function DataEditor() {
     if (!pending) return;
     const snap = useStore.getState().snapshot();
     if (mode === "replace") replaceData(pending.data);
-    else mergeData(pending.data);
+    else mergeData(pending.data, { includeSettings: mergeSettings });
     setPending(null);
     toast(mode === "replace" ? "Data replaced from backup" : "Backup merged", { tone: "success", undo: () => useStore.getState().restore(snap) });
   };
@@ -137,6 +138,13 @@ export function DataEditor() {
             <li>{pending.data.rules.length} rules</li>
           </ul>
         )}
+        <Switch
+          className="mt-4"
+          checked={mergeSettings}
+          onCheckedChange={setMergeSettings}
+          label="When merging, also use its settings"
+          description="Paydays, monthly salary, rates and government deduction settings. Replace always uses them."
+        />
       </Dialog>
       <ConfirmDialog
         open={confirmDemo}

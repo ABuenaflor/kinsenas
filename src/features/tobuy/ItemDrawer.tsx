@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Field, MoneyInput, PercentInput, SegmentedControl, Select, TextInput } from "@/components/ui/inputs";
 import { Drawer } from "@/components/ui/overlays";
@@ -42,16 +42,20 @@ const isHttpUrl = (s: string) => /^https?:\/\/\S+$/i.test(s);
 
 /** Global add/edit To-Buy drawer. */
 export function ItemDrawer() {
-  const { open, editing } = useUi((s) => s.toBuyDrawer);
+  const drawer = useUi((s) => s.toBuyDrawer);
+  const { open, editing } = drawer;
   const close = useUi((s) => s.closeToBuy);
   const buckets = useActiveBuckets();
   const id = useId();
   const [f, setF] = useState<FormState>(() => fromItem());
   const set = (patch: Partial<FormState>) => setF((x) => ({ ...x, ...patch }));
 
-  useEffect(() => {
-    if (open) setF(fromItem(editing));
-  }, [open, editing]);
+  // Each open (openToBuy makes a new drawer object) starts from the item being edited, or blank.
+  const [openedFor, setOpenedFor] = useState<typeof drawer | null>(null);
+  if (open && openedFor !== drawer) {
+    setOpenedFor(drawer);
+    setF(fromItem(editing));
+  }
 
   const urlBad = (f.url && !isHttpUrl(f.url)) || (f.imageUrl && !isHttpUrl(f.imageUrl));
   const valid = f.name.trim() && f.targetPrice !== null && f.targetPrice > 0 && !urlBad && (f.autoKind !== "fixed" || (f.autoAmount ?? 0) > 0);

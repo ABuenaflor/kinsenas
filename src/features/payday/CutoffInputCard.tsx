@@ -6,10 +6,11 @@ import { MagneticButton, Button } from "@/components/ui/Button";
 import { LabelTag, MarginNote } from "@/components/ui/diy";
 import { Field, MoneyInput, SegmentedControl, Select, Switch, TextInput } from "@/components/ui/inputs";
 import { KeyboardHint } from "@/components/ui/misc";
+import { MonthPicker } from "@/components/ui/MonthPicker";
 import type { CutoffResult } from "@/domain/computeCutoff";
 import { newId } from "@/lib/ids";
 import { formatMoney } from "@/lib/money";
-import { halfLabel, makeCutoffId, monthLabel, parseCutoffId, periodOf, shiftMonthKey, todayISO } from "@/lib/periods";
+import { halfLabel, makeCutoffId, parseCutoffId, periodOf, shiftMonthKey, todayISO } from "@/lib/periods";
 import { useStore } from "@/store/useStore";
 import type { CutoffDraft } from "./useCutoffDraft";
 
@@ -18,11 +19,13 @@ interface Props {
   update: (patch: Partial<CutoffDraft>) => void;
   preview: CutoffResult;
   editing: boolean;
+  /** Saved before cutoffs stored their basis: edits use today's rates. */
+  legacy?: boolean;
   dirty: boolean;
   onSave: () => void;
 }
 
-export function CutoffInputCard({ draft, update, preview, editing, dirty, onSave }: Props) {
+export function CutoffInputCard({ draft, update, preview, editing, legacy, dirty, onSave }: Props) {
   const paydays = useStore((s) => s.settings.paydays);
   const rules = useStore((s) => s.rules);
   const cutoffs = useStore((s) => s.cutoffs);
@@ -34,16 +37,15 @@ export function CutoffInputCard({ draft, update, preview, editing, dirty, onSave
   const noteId = useId();
   const salaryId = useId();
 
-  const focusToken = (location.state as { focusSalary?: number } | null)?.focusSalary;
+  // 'Log payday' (FAB, palette, onboarding) navigates here with focusSalary; location.key is unique per navigation.
+  const wantsFocus = (location.state as { focusSalary?: boolean } | null)?.focusSalary === true;
   useEffect(() => {
-    if (focusToken) salaryRef.current?.focus();
-  }, [focusToken]);
+    if (wantsFocus) salaryRef.current?.focus();
+  }, [wantsFocus, location.key]);
 
   const { year, month, half } = parseCutoffId(draft.cutoffId);
   const monthKeyNow = todayISO().slice(0, 7);
   const currentKey = `${year}-${String(month).padStart(2, "0")}`;
-  const monthOptions = Array.from({ length: 15 }, (_, i) => shiftMonthKey(monthKeyNow, 2 - i));
-  if (!monthOptions.includes(currentKey)) monthOptions.push(currentKey);
   const loggedIds = new Set(cutoffs.map((c) => c.id));
   const firstRun = cutoffs.length === 0;
   const adj = draft.adjustments;
@@ -57,24 +59,17 @@ export function CutoffInputCard({ draft, update, preview, editing, dirty, onSave
       }}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <label className="sr-only" htmlFor={`${salaryId}-m`}>
-          Month
-        </label>
-        <Select
-          id={`${salaryId}-m`}
+        <MonthPicker
+          label="Month"
           value={currentKey}
-          onChange={(e) => {
-            const [y, m] = e.target.value.split("-").map(Number);
+          max={shiftMonthKey(monthKeyNow, 2)}
+          onChange={(k) => {
+            if (!k) return;
+            const [y, m] = k.split("-").map(Number);
             setPeriod(makeCutoffId(y ?? year, m ?? month, half));
           }}
-          className="w-36"
-        >
-          {monthOptions.map((k) => (
-            <option key={k} value={k}>
-              {monthLabel(k, true)}
-            </option>
-          ))}
-        </Select>
+          className="w-44"
+        />
         <SegmentedControl
           label="Payday"
           value={half}
@@ -219,7 +214,7 @@ export function CutoffInputCard({ draft, update, preview, editing, dirty, onSave
 
       <div className="mt-4 flex items-center justify-between gap-3">
         <p className="text-xs text-muted">
-          {draft.cutoffId > periodOf(todayISO(), paydays) ? "Heads up: this payday hasn't arrived yet." : editing ? "Saving replaces this cutoff's snapshot." : " "}
+          {draft.cutoffId > periodOf(todayISO(), paydays) ? "Heads up: this payday hasn't arrived yet." : editing ? (legacy ? "Older cutoff: edits use your current rates." : "Uses the rates & rule saved with this cutoff.") : " "}
         </p>
         <MagneticButton type="submit" size="lg" disabled={draft.gross === null || draft.gross <= 0 || (editing && !dirty)} className="min-w-36">
           {editing ? "Update cutoff" : "Save cutoff"}

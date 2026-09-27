@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useReduced } from "@/hooks/useMedia";
 import { cn } from "@/lib/cn";
 import { mulberry32 } from "@/lib/rng";
@@ -18,25 +18,42 @@ export function ProgressBar({
   label: string;
   track?: boolean;
 }) {
-  const clamped = Math.max(0, Math.min(1, value));
   const over = value > 1;
+  // When over budget the bar's full width stands for `value` (capped at 3× so the
+  // budget part stays visible); the budget ends at the tick, the rest is hatched.
+  const span = over ? Math.min(value, 3) : 1;
+  const budgetEnd = Number.isFinite(value) ? 1 / span : 0; // Infinity = spent with no budget at all
+  const spring = { type: "spring", stiffness: 220, damping: 26 } as const;
+  const pctNow = Number.isFinite(value) ? Math.round(value * 100) : undefined;
   return (
     <div
       role="progressbar"
       aria-label={label}
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-valuenow={Math.round(value * 100)}
-      aria-valuetext={`${Math.round(value * 100)}%${over ? " (over)" : ""}`}
+      aria-valuenow={pctNow}
+      aria-valuetext={pctNow === undefined ? "spent with no budget" : `${pctNow}%${over ? " (over budget)" : ""}`}
       className={cn("relative h-2.5 w-full overflow-hidden rounded-full", track && "bg-surface-2", className)}
     >
       <motion.div
-        className={cn("absolute inset-y-0 left-0 w-full origin-left rounded-full", over && "hatch")}
-        style={over ? undefined : { background: color }}
+        className="absolute inset-y-0 left-0 w-full origin-left rounded-full"
+        style={{ background: color }}
         initial={{ scaleX: 0 }}
-        animate={{ scaleX: clamped }}
-        transition={{ type: "spring", stiffness: 220, damping: 26 }}
+        animate={{ scaleX: over ? budgetEnd : Math.max(0, value) }}
+        transition={spring}
       />
+      {over && (
+        <>
+          <motion.div
+            className="hatch absolute inset-y-0 right-0 origin-left rounded-r-full"
+            style={{ left: `${budgetEnd * 100}%` }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ ...spring, delay: 0.15 }}
+          />
+          <span aria-hidden className="absolute inset-y-0 w-0.5 bg-surface" style={{ left: `calc(${budgetEnd * 100}% - 1px)` }} />
+        </>
+      )}
     </div>
   );
 }
@@ -94,17 +111,18 @@ const SCRAP_COLORS = ["var(--highlight)", "var(--savings)", "var(--essentials)",
 export function PaperConfetti({ fire }: { fire: number }) {
   const reduced = useReduced();
   const [bursts, setBursts] = useState<number[]>([]);
-  const first = useRef(true);
+  // Start a burst when `fire` changes (adjusting state during render, not in an effect).
+  const [seenFire, setSeenFire] = useState(fire);
+  if (fire !== seenFire) {
+    setSeenFire(fire);
+    if (!reduced && fire > 0) setBursts((prev) => [...prev, fire]);
+  }
+  // Clear the oldest burst once its scraps have fallen.
   useEffect(() => {
-    if (first.current) {
-      first.current = false;
-      return;
-    }
-    if (reduced || fire === 0) return;
-    setBursts((b) => [...b, fire]);
-    const t = setTimeout(() => setBursts((b) => b.filter((x) => x !== fire)), 1400);
+    if (bursts.length === 0) return;
+    const t = setTimeout(() => setBursts((prev) => prev.slice(1)), 1400);
     return () => clearTimeout(t);
-  }, [fire, reduced]);
+  }, [bursts]);
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-visible">
       <AnimatePresence>

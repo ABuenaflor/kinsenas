@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import type { ReactNode } from "react";
+import { HandStroke } from "@/components/ui/diy";
 import { NumberTicker } from "@/components/ui/NumberTicker";
 import { useReduced } from "@/hooks/useMedia";
 import { cn } from "@/lib/cn";
@@ -18,6 +19,7 @@ export interface ReceiptProps {
   printKey?: string | number;
   animate?: boolean;
   overlay?: ReactNode;
+  circleNet?: boolean; // hand-drawn circle around Net pay (after saving)
   className?: string;
 }
 
@@ -47,6 +49,7 @@ export function Receipt({
   printKey = 0,
   animate = true,
   overlay,
+  circleNet,
   className,
 }: ReceiptProps) {
   const reduced = useReduced();
@@ -83,8 +86,9 @@ export function Receipt({
         <motion.hr variants={item} className="dash my-2" />
         <motion.div variants={item} className="flex items-baseline justify-between py-1">
           <span className="text-sm font-bold tracking-[0.1em]">NET PAY</span>
-          <span className={cn("text-2xl font-semibold", negative && "text-danger")}>
+          <span className={cn("relative text-2xl font-semibold", negative && "text-danger")}>
             <NumberTicker value={net} live />
+            {circleNet && <HandStroke kind="circle" className="absolute -inset-x-4 -inset-y-3 h-[calc(100%+24px)] w-[calc(100%+32px)]" color="var(--danger)" width={2} delay={0.35} />}
           </span>
         </motion.div>
         <AnimatePresence>

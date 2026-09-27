@@ -10,6 +10,7 @@ import { useBucketMap, useCategoryMap } from "@/store/selectors";
 import { useStore } from "@/store/useStore";
 import { useUi } from "@/store/useUi";
 import { Button } from "@/components/ui/Button";
+import { useReduced } from "@/hooks/useMedia";
 
 function dayTitle(date: string): string {
   const today = todayISO();
@@ -22,6 +23,8 @@ function Row({ e }: { e: Expense }) {
   const categories = useCategoryMap();
   const buckets = useBucketMap();
   const openExpense = useUi((s) => s.openExpense);
+  const fresh = useUi((s) => (s.lastAdded?.id === e.id ? s.lastAdded.from : null));
+  const reduced = useReduced();
   const cutoffExists = useStore((s) => s.cutoffs.some((c) => c.id === e.cutoffId));
   const x = useMotionValue(0);
   const bin = useTransform(x, [-120, -40, 0], [1, 0.4, 0]);
@@ -38,12 +41,22 @@ function Row({ e }: { e: Expense }) {
   return (
     <motion.li
       layout
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
+      // Fly in from where it was added: the drawer/palette sit to the right, the inline form above.
+      initial={reduced ? { opacity: 0 } : fresh === "inline" ? { opacity: 0, y: -48, scale: 0.97 } : fresh ? { opacity: 0, x: 96, y: -12, scale: 0.96 } : { opacity: 0, y: -10 }}
+      animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
       exit={{ opacity: 0, x: -60, transition: { duration: 0.18 } }}
       transition={{ type: "spring", stiffness: 500, damping: 38 }}
       className="relative overflow-hidden"
     >
+      {fresh && (
+        <motion.span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-10 bg-highlight"
+          initial={{ opacity: 0.45 }}
+          animate={{ opacity: 0 }}
+          transition={{ duration: 1.2, delay: 0.25 }}
+        />
+      )}
       <motion.div aria-hidden style={{ opacity: bin }} className="absolute inset-y-0 right-0 flex w-28 items-center justify-end bg-danger pr-5 text-white">
         <Trash2 className="size-5" />
       </motion.div>

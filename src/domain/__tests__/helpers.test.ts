@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { formatBps, formatCompact, formatMoney, parseBps, parseMoney, pct } from "@/lib/money";
-import { cutoffLabel, nextCutoffId, nextPayday, periodRange, prevCutoffId } from "@/lib/periods";
+import { cutoffLabel, defaultCutoffToLog, nextCutoffId, nextPayday, periodRange, prevCutoffId } from "@/lib/periods";
 import { customApplies } from "../deductions";
 import { etaOf, autoContributionFor, nextStatus } from "../toBuy";
 import type { CustomDeduction, ToBuyItem } from "../types";
@@ -42,6 +42,13 @@ describe("periods", () => {
   it("next payday", () => {
     expect(nextPayday("2026-09-27", pd)).toEqual({ id: "2026-09-B", date: "2026-09-30", inDays: 3 });
     expect(nextPayday("2026-09-15", pd).inDays).toBe(0);
+  });
+  it("default cutoff to log", () => {
+    const today = "2026-09-27"; // current = 2026-09-A
+    expect(defaultCutoffToLog(today, pd, new Set())).toBe("2026-09-A");
+    expect(defaultCutoffToLog(today, pd, new Set(["2026-09-A"]))).toBe("2026-08-B");
+    expect(defaultCutoffToLog(today, pd, new Set(["2026-09-A", "2026-08-B"]))).toBe("2026-08-A");
+    expect(defaultCutoffToLog(today, pd, new Set(["2026-09-A", "2026-08-B", "2026-08-A"]))).toBe("2026-09-A");
   });
   it("labels", () => expect(cutoffLabel("2026-09-A", pd)).toBe("Sep 2026 · 15th"));
 });

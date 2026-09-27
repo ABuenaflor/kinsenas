@@ -78,6 +78,11 @@ export function Sticker({
   );
 }
 
+// [left %, top %, size px] ink droplets flicked off the stamp on impact.
+const SPLATTER: [number, number, number][] = [
+  [-8, 20, 5], [104, 30, 4], [96, -14, 6], [-4, 96, 4], [48, 118, 3], [112, 88, 5], [20, -18, 3], [70, 112, 4],
+];
+
 /** Rubber stamp that slams onto the receipt when a cutoff is saved. */
 export function Stamp({ label = "PAID ✓", sub, className }: { label?: string; sub?: string; className?: string }) {
   const reduced = useReduced();
@@ -92,6 +97,17 @@ export function Stamp({ label = "PAID ✓", sub, className }: { label?: string; 
     >
       <div className="font-mono text-2xl font-bold tracking-[0.18em]">{label}</div>
       {sub && <div className="font-mono text-[10px] tracking-[0.2em]">{sub}</div>}
+      {!reduced &&
+        SPLATTER.map(([x, y, r], i) => (
+          <motion.span
+            key={i}
+            className="absolute rounded-full bg-danger"
+            style={{ left: `${x}%`, top: `${y}%`, width: r, height: r }}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: [0, 0.75, 0], scale: [0, 1.2, 1] }}
+            transition={{ duration: 1.1, delay: 0.12 + i * 0.02, times: [0, 0.2, 1] }}
+          />
+        ))}
     </motion.div>
   );
 }

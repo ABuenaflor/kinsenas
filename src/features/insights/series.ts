@@ -3,7 +3,7 @@ import type { Centavos, Expense } from "@/domain/types";
 import { cutoffLabel, makeCutoffId, monthKeysBetween, monthLabel, parseCutoffId, shiftMonthKey } from "@/lib/periods";
 import type { Paydays } from "@/domain/types";
 
-export type RangeKey = "3" | "6" | "12" | "ytd";
+export type RangeKey = "3" | "6" | "12" | "ytd" | "custom";
 export type Granularity = "month" | "cutoff";
 
 export interface SeriesPoint {
@@ -20,7 +20,9 @@ export interface SeriesPoint {
   cumulativeSaved: Centavos;
 }
 
-export function monthsForRange(range: RangeKey, endMonth: string): string[] {
+export function monthsForRange(range: RangeKey, endMonth: string, custom?: { from: string; to: string }): string[] {
+  if (range === "custom" && custom) return monthKeysBetween(custom.from <= custom.to ? custom.from : custom.to, custom.from <= custom.to ? custom.to : custom.from);
+  if (range === "custom") return monthKeysBetween(shiftMonthKey(endMonth, -5), endMonth);
   if (range === "ytd") return monthKeysBetween(`${endMonth.slice(0, 4)}-01`, endMonth);
   const n = Number(range);
   return monthKeysBetween(shiftMonthKey(endMonth, -(n - 1)), endMonth);

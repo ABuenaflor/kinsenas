@@ -7,7 +7,8 @@ import { toast } from "@/components/ui/Toast";
 import { useReduced } from "@/hooks/useMedia";
 import { cn } from "@/lib/cn";
 import { formatMoney } from "@/lib/money";
-import { monthKey, monthLabel, monthKeysBetween } from "@/lib/periods";
+import { monthKey, monthLabel, monthKeysBetween, shiftMonthKey } from "@/lib/periods";
+import { MonthPicker } from "@/components/ui/MonthPicker";
 import { useActiveBuckets, useCategoryMap } from "@/store/selectors";
 import { useStore } from "@/store/useStore";
 import { AllocatedVsSpent, MonthlyFlowChart, SavingsOverTime, SpendingByCategory, SpendingCalendar, WhereGrossWent } from "./charts";
@@ -58,12 +59,15 @@ export default function InsightsPage() {
   const [bucketId, setBucketId] = useState<string | null>(null);
 
   const selMonth = monthKey(period);
-  const months = useMemo(() => monthsForRange(range, selMonth), [range, selMonth]);
+  const [custom, setCustom] = useState(() => ({ from: shiftMonthKey(selMonth, -5), to: selMonth }));
+  const months = useMemo(() => monthsForRange(range, selMonth, custom), [range, selMonth, custom]);
   const data = useMemo(() => ({ cutoffs, expenses, toBuy, buckets: allBuckets }), [cutoffs, expenses, toBuy, allBuckets]);
   const series = useMemo(() => buildSeries(months, gran, data, paydays), [months, gran, data, paydays]);
   const monthly = useMemo(() => (gran === "month" ? series : buildSeries(months, "month", data, paydays)), [gran, series, months, data, paydays]);
-  const current = monthly[monthly.length - 1];
-  const prev = monthly[monthly.length - 2];
+  // KPI tiles always describe the selected month vs the one before, whatever the chart range.
+  const kpiPair = useMemo(() => buildSeries([shiftMonthKey(selMonth, -1), selMonth], "month", data, paydays), [selMonth, data, paydays]);
+  const current = kpiPair[1];
+  const prev = kpiPair[0] && kpiPair[0].m.cutoffCount + kpiPair[0].m.txCount > 0 ? kpiPair[0] : undefined;
 
   const rangeIds = useMemo(() => series.flatMap((s) => s.ids), [series]);
   const rangeExpenses = useMemo(() => expensesIn(expenses, rangeIds, bucketId), [expenses, rangeIds, bucketId]);
@@ -124,8 +128,16 @@ export default function InsightsPage() {
             { value: "6", label: "6 mo" },
             { value: "12", label: "12 mo" },
             { value: "ytd", label: "YTD" },
+            { value: "custom", label: "Custom" },
           ]}
         />
+        {range === "custom" && (
+          <div className="flex items-center gap-2">
+            <MonthPicker label="From" value={custom.from} max={custom.to} onChange={(v) => v && setCustom((c) => ({ ...c, from: v }))} className="w-40" />
+            <span className="text-muted" aria-hidden>→</span>
+            <MonthPicker label="To" value={custom.to} min={custom.from} onChange={(v) => v && setCustom((c) => ({ ...c, to: v }))} className="w-40" />
+          </div>
+        )}
         <SegmentedControl<Granularity>
           label="Granularity"
           size="sm"

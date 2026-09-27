@@ -1,5 +1,5 @@
 import { ArchiveRestore, Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Select, TextInput } from "@/components/ui/inputs";
 import { toast } from "@/components/ui/Toast";
@@ -17,10 +17,13 @@ function CategoryRow({ c }: { c: Category }) {
   const buckets = useActiveBuckets();
   const [name, setName] = useState(c.name);
   const [emoji, setEmoji] = useState(c.emoji);
-  useEffect(() => {
+  // Follow outside edits (undo, import).
+  const [shown, setShown] = useState({ name: c.name, emoji: c.emoji });
+  if (shown.name !== c.name || shown.emoji !== c.emoji) {
+    setShown({ name: c.name, emoji: c.emoji });
     setName(c.name);
     setEmoji(c.emoji);
-  }, [c.name, c.emoji]);
+  }
   const nextColor = () => SWATCHES[(SWATCHES.indexOf(c.color as (typeof SWATCHES)[number]) + 1) % SWATCHES.length] ?? SWATCHES[0];
 
   return (

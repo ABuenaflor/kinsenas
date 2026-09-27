@@ -99,6 +99,20 @@ export interface CutoffAdjustments {
   extras: { id: string; label: string; amount: Centavos }[];
 }
 
+/**
+ * What a cutoff was computed with. Editing a saved cutoff reuses this, so later
+ * changes to rates, deductions or rules never leak in; only "Re-apply current
+ * rules" replaces it.
+ */
+export interface CutoffBasis {
+  monthlyBasicSalary: Centavos | null;
+  govRates: GovRates;
+  govDeductions: GovDeduction[];
+  customDeductions: CustomDeduction[]; // only the ones that applied to this cutoff
+  rule: AllocationRule;
+  buckets: Bucket[]; // buckets the rule referenced, as they were
+}
+
 export interface Cutoff {
   id: CutoffId;
   year: number;
@@ -110,6 +124,7 @@ export interface Cutoff {
   note?: string;
   ruleId: string;
   adjustments?: CutoffAdjustments;
+  basis?: CutoffBasis; // absent on cutoffs saved before schema v2
   // Snapshots taken at save time. Changing settings later never silently rewrites history.
   deductions: DeductionLine[];
   totalDeductions: Centavos;

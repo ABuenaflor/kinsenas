@@ -8,7 +8,9 @@ let openCount = 0;
 /** Trap focus inside `ref` while active, close on Escape, restore focus on close, lock page scroll. */
 export function useFocusTrap(ref: RefObject<HTMLElement | null>, active: boolean, onEscape: () => void) {
   const escRef = useRef(onEscape);
-  escRef.current = onEscape;
+  useEffect(() => {
+    escRef.current = onEscape;
+  });
 
   useEffect(() => {
     if (!active) return;

@@ -1,5 +1,5 @@
 import { Archive, ArchiveRestore, Copy, Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Field, Switch, TextInput } from "@/components/ui/inputs";
 import { toast } from "@/components/ui/Toast";
@@ -37,7 +37,12 @@ function BucketRow({ b }: { b: Bucket }) {
   const remove = useStore((s) => s.removeBucket);
   const restore = useStore((s) => s.restoreBucket);
   const [name, setName] = useState(b.name);
-  useEffect(() => setName(b.name), [b.name]);
+  // Follow outside renames (undo, import) without clobbering what's being typed otherwise.
+  const [shownName, setShownName] = useState(b.name);
+  if (shownName !== b.name) {
+    setShownName(b.name);
+    setName(b.name);
+  }
   return (
     <li className={cn("space-y-2 px-3 py-3", b.archived && "opacity-60")}>
       <div className="flex items-center gap-2">
@@ -114,7 +119,12 @@ export function RulesEditor() {
   const [selectedId, setSelectedId] = useState(activeRuleId);
   const stored = rules.find((r) => r.id === selectedId) ?? rules[0];
   const [draft, setDraft] = useState<AllocationRule | undefined>(stored);
-  useEffect(() => setDraft(stored), [stored]);
+  // Switching rules (or saving) loads the stored version into the editor.
+  const [draftOf, setDraftOf] = useState(stored);
+  if (draftOf !== stored) {
+    setDraftOf(stored);
+    setDraft(stored);
+  }
   if (!draft || !stored) return null;
   const valid = validateRule(draft, buckets).ok;
   const dirty = JSON.stringify(draft) !== JSON.stringify(stored);

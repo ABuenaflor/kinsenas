@@ -158,3 +158,17 @@ export function shiftMonthKey(key: string, delta: number): string {
   const idx = y * 12 + (m - 1) + delta;
   return `${Math.floor(idx / 12)}-${pad2((idx % 12) + 1)}`;
 }
+
+/**
+ * Cutoff the Payday page should open on: the most recent payday that isn't logged
+ * yet (looking back one month at most), else the current cutoff for editing.
+ */
+export function defaultCutoffToLog(today: ISODate, paydays: Paydays, logged: ReadonlySet<CutoffId>): CutoffId {
+  const current = periodOf(today, paydays);
+  let id = current;
+  for (let i = 0; i < 3; i++) {
+    if (!logged.has(id)) return id;
+    id = prevCutoffId(id);
+  }
+  return current;
+}

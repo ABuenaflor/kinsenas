@@ -34,7 +34,7 @@ export default function Onboarding() {
   const finish = (useDefaults = false) => {
     if (!useDefaults && rule && ruleOk) upsertRule(rule);
     update({ onboardingDone: true });
-    navigate("/", { state: { focusSalary: Date.now() } });
+    navigate("/", { state: { focusSalary: true } });
   };
   useFocusTrap(ref, true, () => finish(true));
 

@@ -5,10 +5,11 @@ import { PageHeader } from "@/components/layout/PeriodSwitcher";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { SegmentedControl } from "@/components/ui/inputs";
+import { TabPanel, Tabs } from "@/components/ui/Tabs";
 import { EmptyState } from "@/components/ui/misc";
 import { Drawer } from "@/components/ui/overlays";
 import { NumberTicker } from "@/components/ui/NumberTicker";
-import { ProgressRing } from "@/components/ui/progress";
+import { PaperConfetti, ProgressRing } from "@/components/ui/progress";
 import { toast } from "@/components/ui/Toast";
 import { fundedOf } from "@/domain/toBuy";
 import type { ToBuyItem } from "@/domain/types";
@@ -92,6 +93,7 @@ export default function ToBuyPage() {
   const [buying, setBuying] = useState<ToBuyItem | null>(null);
   const [historyItem, setHistoryItem] = useState<ToBuyItem | null>(null);
   const [confetti, setConfetti] = useState<Record<string, number>>({});
+  const [pageBurst, setPageBurst] = useState(0); // bought items leave the grid, so celebrate over the page
   const burst = (id: string) => setConfetti((c) => ({ ...c, [id]: (c[id] ?? 0) + 1 }));
 
   const active = toBuy.filter((t) => t.status === "saving" || t.status === "ready");
@@ -147,16 +149,15 @@ export default function ToBuyPage() {
         </div>
       </Card>
 
-      <div className="mb-6 flex flex-wrap items-center gap-3">
-        <SegmentedControl<StatusFilter>
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <Tabs<StatusFilter>
           label="Status"
+          idBase="tb-status"
           value={status}
           onChange={setStatus}
-          layoutId="tb-status"
-          size="sm"
-          options={[
-            { value: "active", label: "Saving" },
-            { value: "ready", label: "Ready" },
+          tabs={[
+            { value: "active", label: `Saving (${active.length})` },
+            { value: "ready", label: `Ready (${readyCount})` },
             { value: "archived", label: "Archived" },
           ]}
         />
@@ -175,6 +176,7 @@ export default function ToBuyPage() {
         />
       </div>
 
+      <TabPanel idBase="tb-status" value={status}>
       {visible.length === 0 ? (
         <EmptyState
           title={status === "archived" ? "Nothing archived" : "Your wishlist is empty"}
@@ -200,6 +202,7 @@ export default function ToBuyPage() {
           </AnimatePresence>
         </motion.div>
       )}
+      </TabPanel>
 
       {bought.length > 0 && (
         <section className="mt-12">
@@ -235,8 +238,11 @@ export default function ToBuyPage() {
       )}
 
       {contrib && <ContributionDialog item={contrib.item} mode={contrib.mode} onClose={() => setContrib(null)} onFunded={() => burst(contrib.item.id)} />}
-      {buying && <BoughtDialog item={buying} onClose={() => setBuying(null)} onBought={() => burst(buying.id)} />}
+      {buying && <BoughtDialog item={buying} onClose={() => setBuying(null)} onBought={() => setPageBurst((n) => n + 1)} />}
       <HistoryDrawer item={historyItem} onClose={() => setHistoryItem(null)} />
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-[85]">
+        <PaperConfetti fire={pageBurst} />
+      </div>
     </div>
   );
 }

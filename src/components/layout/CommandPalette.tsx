@@ -50,14 +50,15 @@ function Palette({ onClose }: { onClose: () => void }) {
           run: () => {
             const s = useStore.getState();
             const snap = s.snapshot();
-            s.addExpense({ amount, date: todayISO(), categoryId: cat.id, bucketId: bucket.id, note: parsed.note });
+            const added = s.addExpense({ amount, date: todayISO(), categoryId: cat.id, bucketId: bucket.id, note: parsed.note });
+            useUi.getState().markAdded(added.id, "palette");
             toast(`Added ${formatMoney(amount)} to ${bucket.name}`, { tone: "success", undo: () => useStore.getState().restore(snap) });
           },
         });
     }
     list.push(
       { id: "add-expense", label: "Add expense…", icon: ReceiptText, run: () => openExpense() },
-      { id: "log-payday", label: "Log payday", icon: Wallet, run: () => navigate("/", { state: { focusSalary: Date.now() } }) },
+      { id: "log-payday", label: "Log payday", icon: Wallet, run: () => navigate("/", { state: { focusSalary: true } }) },
       { id: "add-tobuy", label: "Add To-Buy item…", icon: Gift, run: () => openToBuy() },
       ...NAV.map((n) => ({ id: `go-${n.to}`, label: `Go to ${n.label}`, icon: n.icon, run: () => navigate(n.to) })),
       {
@@ -74,8 +75,6 @@ function Palette({ onClose }: { onClose: () => void }) {
     const needle = q.trim().toLowerCase();
     return needle ? list.filter((c) => c.label.toLowerCase().includes(needle)) : list;
   }, [parsed, q, categories, buckets, navigate, openExpense, openToBuy]);
-
-  useEffect(() => setActive(0), [q]);
 
   const run = (c: Command | undefined) => {
     if (!c) return;
@@ -100,10 +99,12 @@ function Palette({ onClose }: { onClose: () => void }) {
         <div className="flex items-center gap-3 border-b border-line px-4">
           <Search className="size-4 text-muted" aria-hidden />
           <input
-            autoFocus
             data-autofocus
             value={q}
-            onChange={(e) => setQ(e.target.value)}
+            onChange={(e) => {
+              setQ(e.target.value);
+              setActive(0);
+            }}
             onKeyDown={(e) => {
               if (e.key === "ArrowDown") {
                 e.preventDefault();
@@ -128,6 +129,8 @@ function Palette({ onClose }: { onClose: () => void }) {
         </div>
         <ul id="palette-list" role="listbox" className="max-h-[50vh] overflow-y-auto p-2">
           {commands.map((c, i) => (
+            // Combobox pattern: focus stays in the input (arrows + Enter); clicks are a mouse convenience.
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events
             <li
               key={c.id}
               id={`cmd-${c.id}`}

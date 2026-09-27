@@ -13,6 +13,7 @@ import type {
   CustomDeduction,
   Cutoff,
   CutoffAdjustments,
+  CutoffBasis,
   CutoffId,
   DeductionLine,
   GovDeduction,
@@ -94,6 +95,38 @@ export function computeCutoff(input: CutoffInput, ctx: CutoffContext): CutoffRes
   return { deductions, totalDeductions, net, allocations, taxable, monthlyBasis, negativeNet: net < 0, rule };
 }
 
+/** Capture what a cutoff is being computed with (stored as Cutoff.basis). */
+export function basisOf(cutoffId: CutoffId, gross: Centavos, ctx: CutoffContext, rule: AllocationRule): CutoffBasis {
+  const bucketIds = new Set(rule.shares.map((s) => s.bucketId));
+  return structuredClone({
+    monthlyBasicSalary: ctx.settings.monthlyBasicSalary,
+    govRates: ctx.govRates,
+    govDeductions: [...ctx.govDeductions],
+    customDeductions: ctx.customDeductions.filter((d) => customDeductionLines([d], cutoffId, gross).length > 0),
+    rule,
+    buckets: ctx.buckets.filter((b) => bucketIds.has(b.id)),
+  });
+}
+
+/**
+ * Context for editing a saved cutoff: its stored basis, not today's settings.
+ * Picking a different rule while editing uses that rule's current definition.
+ * Cutoffs saved before bases existed fall back to the current context.
+ */
+export function editContext(basis: CutoffBasis | undefined, current: CutoffContext, ruleId: string): CutoffContext {
+  if (!basis) return current;
+  const sameRule = ruleId === basis.rule.id;
+  const snapBucketIds = new Set(basis.buckets.map((b) => b.id));
+  return {
+    settings: { paydays: current.settings.paydays, monthlyBasicSalary: basis.monthlyBasicSalary },
+    govRates: basis.govRates,
+    govDeductions: basis.govDeductions,
+    customDeductions: basis.customDeductions,
+    buckets: sameRule ? [...basis.buckets, ...current.buckets.filter((b) => !snapBucketIds.has(b.id))] : current.buckets,
+    rules: sameRule ? [basis.rule, ...current.rules.filter((r) => r.id !== basis.rule.id)] : current.rules,
+  };
+}
+
 /** Build a Cutoff record (snapshot) from an input + context. */
 export function buildCutoff(
   input: CutoffInput & { note?: string },
@@ -108,12 +141,13 @@ export function buildCutoff(
     year,
     month,
     half,
-    payDate: payDateOf(input.cutoffId, ctx.settings.paydays),
+    payDate: existing?.payDate ?? payDateOf(input.cutoffId, ctx.settings.paydays),
     gross: input.gross,
     govAlreadyDeducted: input.govAlreadyDeducted,
     note: input.note?.trim() || undefined,
     ruleId: r.rule?.id ?? input.ruleId,
     adjustments: input.adjustments,
+    basis: r.rule ? basisOf(input.cutoffId, input.gross, ctx, r.rule) : undefined,
     deductions: r.deductions,
     totalDeductions: r.totalDeductions,
     net: r.net,

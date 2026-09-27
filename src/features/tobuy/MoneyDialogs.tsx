@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Field, MoneyInput, Select, TextInput } from "@/components/ui/inputs";
 import { Dialog } from "@/components/ui/overlays";
@@ -10,21 +10,14 @@ import { cutoffLabel, payDateOf, prevCutoffId, nextCutoffId, todayISO } from "@/
 import { useMetrics } from "@/store/selectors";
 import { useStore } from "@/store/useStore";
 
-/** Add money to (or withdraw from) an item for a chosen cutoff. */
-export function ContributionDialog({ item, mode, onClose, onFunded }: { item: ToBuyItem | null; mode: "add" | "withdraw"; onClose: () => void; onFunded?: () => void }) {
+/** Add money to (or withdraw from) an item for a chosen cutoff. Mounted fresh per use, so state starts from props. */
+export function ContributionDialog({ item, mode, onClose, onFunded }: { item: ToBuyItem; mode: "add" | "withdraw"; onClose: () => void; onFunded?: () => void }) {
   const id = useId();
   const period = useStore((s) => s.ui.period);
   const paydays = useStore((s) => s.settings.paydays);
-  const [amount, setAmount] = useState<number | null>(null);
+  const [amount, setAmount] = useState<number | null>(() => (mode === "add" ? Math.min(toGoOf(item), 100000) || null : null));
   const [cutoffId, setCutoffId] = useState(period);
-  useEffect(() => {
-    if (item) {
-      setAmount(mode === "add" ? Math.min(toGoOf(item), 100000) || null : null);
-      setCutoffId(period);
-    }
-  }, [item, mode, period]);
   const metrics = useMetrics([cutoffId]);
-  if (!item) return <Dialog open={false} onClose={onClose} title="" />;
 
   const bucket = metrics.buckets.find((b) => b.bucketId === item.bucketId);
   const funded = fundedOf(item);
@@ -94,18 +87,11 @@ export function ContributionDialog({ item, mode, onClose, onFunded }: { item: To
   );
 }
 
-/** Ask actual price & date, then create the purchase expense. */
-export function BoughtDialog({ item, onClose, onBought }: { item: ToBuyItem | null; onClose: () => void; onBought: () => void }) {
+/** Ask actual price & date, then create the purchase expense. Mounted fresh per use. */
+export function BoughtDialog({ item, onClose, onBought }: { item: ToBuyItem; onClose: () => void; onBought: () => void }) {
   const id = useId();
-  const [price, setPrice] = useState<number | null>(null);
-  const [date, setDate] = useState(todayISO());
-  useEffect(() => {
-    if (item) {
-      setPrice(item.targetPrice);
-      setDate(todayISO());
-    }
-  }, [item]);
-  if (!item) return <Dialog open={false} onClose={onClose} title="" />;
+  const [price, setPrice] = useState<number | null>(item.targetPrice);
+  const [date, setDate] = useState(todayISO);
   const submit = () => {
     if (price === null || price <= 0 || !date) return;
     const s = useStore.getState();

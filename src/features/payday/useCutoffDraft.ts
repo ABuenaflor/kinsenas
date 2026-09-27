@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { plannedSetAsides } from "@/domain/toBuy";
 import type { Centavos, CutoffAdjustments, CutoffId } from "@/domain/types";
 import { useDebounced } from "@/hooks/useMedia";
@@ -35,9 +35,12 @@ export function useCutoffDraft() {
 
   // Reload when the period changes or the stored cutoff changes underneath us (undo, re-apply).
   const existingStamp = existing?.updatedAt ?? "none";
-  useEffect(() => {
+  const loadedKey = `${period}|${existingStamp}`;
+  const [loadedFor, setLoadedFor] = useState(loadedKey);
+  if (loadedFor !== loadedKey) {
+    setLoadedFor(loadedKey);
     setDraft(fromExisting());
-  }, [period, existingStamp]); // fromExisting reads the latest render's values
+  }
 
   const gross = draft.gross ?? 0;
   const debouncedGross = useDebounced(gross, 150);
@@ -47,7 +50,7 @@ export function useCutoffDraft() {
     govAlreadyDeducted: draft.govAlreadyDeducted,
     ruleId: draft.ruleId,
     adjustments: draft.adjustments,
-  });
+  }, existing?.basis);
 
   const setAsides = useMemo(() => {
     if (existing) {

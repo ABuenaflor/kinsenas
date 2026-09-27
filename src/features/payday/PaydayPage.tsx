@@ -94,7 +94,7 @@ export default function PaydayPage() {
       </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-        <CutoffInputCard draft={draft} update={update} preview={preview} editing={!!existing} dirty={dirty} onSave={save} />
+        <CutoffInputCard draft={draft} update={update} preview={preview} editing={!!existing} legacy={!!existing && !existing.basis} dirty={dirty} onSave={save} />
         <motion.div animate={shakeControls} className="lg:sticky lg:top-28">
           <Receipt
             title={`${halfLabel(half, paydays)} cutoff`}
@@ -106,6 +106,7 @@ export default function PaydayPage() {
             setAsides={setAsides}
             govAlreadyDeducted={draft.govAlreadyDeducted}
             printKey={`${draft.cutoffId}-${debouncedGross > 0}`}
+            circleNet={stampKey > 0}
             overlay={
               <AnimatePresence>
                 {stampKey > 0 && <Stamp key={stampKey} label="PAID ✓" sub={shortDate(payDateOf(draft.cutoffId, paydays))} className="right-6 top-24" />}

@@ -1,4 +1,4 @@
-import { buildCutoff, type CutoffContext, type CutoffInput } from "@/domain/computeCutoff";
+import { buildCutoff, editContext, type CutoffContext, type CutoffInput } from "@/domain/computeCutoff";
 import { autoContributionFor, nextStatus } from "@/domain/toBuy";
 import type { Centavos, Cutoff, CutoffId, ToBuyItem } from "@/domain/types";
 import { newId } from "@/lib/ids";
@@ -45,7 +45,9 @@ export const paydaySlice = (set: Set, get: Get): PaydaySlice => ({
   saveCutoff: (input) => {
     const s = get();
     const existing = s.cutoffs.find((c) => c.id === input.cutoffId);
-    const cutoff = buildCutoff(input, contextOf(s), new Date().toISOString(), existing);
+    // Editing reuses the rates/deductions/rule the cutoff was saved with.
+    const ctx = existing ? editContext(existing.basis, contextOf(s), input.ruleId) : contextOf(s);
+    const cutoff = buildCutoff(input, ctx, new Date().toISOString(), existing);
     const { items, total } = applyAutoSetAsides(s.toBuy, cutoff);
     const cutoffs = existing ? s.cutoffs.map((c) => (c.id === cutoff.id ? cutoff : c)) : [...s.cutoffs, cutoff];
     set({ cutoffs, toBuy: items });

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { computeCutoff, type CutoffInput } from "@/domain/computeCutoff";
+import { computeCutoff, editContext, type CutoffInput } from "@/domain/computeCutoff";
 import { allCutoffIds, monthCutoffIds, periodMetrics, type PeriodMetrics } from "@/domain/metrics";
-import type { Bucket, Category, CutoffId } from "@/domain/types";
+import type { Bucket, Category, CutoffBasis, CutoffId } from "@/domain/types";
 import { monthKey } from "@/lib/periods";
 import { contextOf } from "./slices/payday";
 import { useStore } from "./useStore";
@@ -56,8 +56,8 @@ export function useScopeMetrics(scope: PeriodScope): PeriodMetrics {
   return useMetrics(scopeIds(scope, period, all));
 }
 
-/** Live preview of a cutoff draft using the current settings. */
-export function useCutoffPreview(input: CutoffInput) {
+/** Live preview of a cutoff draft: current settings for a new cutoff, the stored basis when editing. */
+export function useCutoffPreview(input: CutoffInput, basis?: CutoffBasis) {
   const settings = useStore((s) => s.settings);
   const govRates = useStore((s) => s.govRates);
   const govDeductions = useStore((s) => s.govDeductions);
@@ -69,8 +69,8 @@ export function useCutoffPreview(input: CutoffInput) {
     () =>
       computeCutoff(
         { cutoffId, gross, govAlreadyDeducted, ruleId, adjustments },
-        contextOf({ settings, govRates, govDeductions, customDeductions, buckets, rules }),
+        editContext(basis, contextOf({ settings, govRates, govDeductions, customDeductions, buckets, rules }), ruleId),
       ),
-    [cutoffId, gross, govAlreadyDeducted, ruleId, adjustments, settings, govRates, govDeductions, customDeductions, buckets, rules],
+    [cutoffId, gross, govAlreadyDeducted, ruleId, adjustments, basis, settings, govRates, govDeductions, customDeductions, buckets, rules],
   );
 }

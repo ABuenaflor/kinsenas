@@ -1,7 +1,9 @@
-import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from "lucide-react";
+import { Reorder, useDragControls } from "motion/react";
+import { ArrowDown, ArrowUp, GripVertical, Pencil, Plus, Trash2 } from "lucide-react";
 import { useId, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Field, MoneyInput, PercentInput, SegmentedControl, Switch, TextInput } from "@/components/ui/inputs";
+import { MonthPicker } from "@/components/ui/MonthPicker";
 import { Drawer } from "@/components/ui/overlays";
 import { toast } from "@/components/ui/Toast";
 import type { CustomDeduction } from "@/domain/types";
@@ -96,10 +98,10 @@ function DeductionDrawer({ value, onClose }: { value: CustomDeduction | null; on
           </div>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Starts (month)" htmlFor={`${id}-s`} hint="Optional">
-              <TextInput id={`${id}-s`} type="month" value={toMonth(d.startCutoff)} onChange={(e) => set({ startCutoff: e.target.value ? `${e.target.value}-A` : undefined })} />
+              <MonthPicker id={`${id}-s`} label="Starts" clearable placeholder="Anytime" value={toMonth(d.startCutoff) || null} onChange={(v) => set({ startCutoff: v ? `${v}-A` : undefined })} />
             </Field>
             <Field label="Last installment (month)" htmlFor={`${id}-en`} hint="Optional" error={rangeBad ? "Ends before it starts" : undefined}>
-              <TextInput id={`${id}-en`} type="month" value={toMonth(d.endCutoff)} onChange={(e) => set({ endCutoff: e.target.value ? `${e.target.value}-B` : undefined })} />
+              <MonthPicker id={`${id}-en`} label="Last installment" clearable placeholder="No end" value={toMonth(d.endCutoff) || null} onChange={(v) => set({ endCutoff: v ? `${v}-B` : undefined })} />
             </Field>
           </div>
           {(d.startCutoff || d.endCutoff) && (
@@ -111,6 +113,16 @@ function DeductionDrawer({ value, onClose }: { value: CustomDeduction | null; on
         </div>
       )}
     </Drawer>
+  );
+}
+
+/** List row that only starts dragging from its handle, so buttons and text stay clickable. */
+function DragRow({ id, children }: { id: string; children: (startDrag: (e: React.PointerEvent) => void) => React.ReactNode }) {
+  const controls = useDragControls();
+  return (
+    <Reorder.Item value={id} dragListener={false} dragControls={controls} className="flex items-center gap-1 bg-surface px-1.5 py-1.5">
+      {children((e) => controls.start(e))}
+    </Reorder.Item>
   );
 }
 
@@ -135,9 +147,19 @@ export function CustomDeductionsEditor() {
       {sorted.length === 0 ? (
         <p className="mb-3 text-sm text-muted">No custom deductions yet.</p>
       ) : (
-        <ul className="mb-3 divide-y divide-line rounded-md border border-line">
+        <Reorder.Group axis="y" values={sorted.map((d) => d.id)} onReorder={reorder} className="mb-3 divide-y divide-line rounded-md border border-line">
           {sorted.map((d, i) => (
-            <li key={d.id} className="flex items-center gap-2 px-3 py-2">
+            <DragRow key={d.id} id={d.id}>
+              {(startDrag) => (
+            <>
+              <button
+                type="button"
+                aria-label={`Drag to reorder ${d.name}`}
+                onPointerDown={startDrag}
+                className="grid size-11 shrink-0 cursor-grab touch-none place-items-center rounded-md text-muted hover:bg-surface-2 active:cursor-grabbing"
+              >
+                <GripVertical className="size-4" />
+              </button>
               <span className="w-6 text-center" aria-hidden>
                 {d.emoji || "•"}
               </span>
@@ -148,10 +170,10 @@ export function CustomDeductionsEditor() {
                   {d.endCutoff && ` · until ${cutoffLabel(d.endCutoff, paydays)}`}
                 </span>
               </span>
-              <Button size="icon" variant="ghost" aria-label={`Move ${d.name} up`} disabled={i === 0} onClick={() => move(i, -1)}>
+              <Button size="icon" variant="ghost" className="hidden sm:inline-flex" aria-label={`Move ${d.name} up`} disabled={i === 0} onClick={() => move(i, -1)}>
                 <ArrowUp className="size-4" />
               </Button>
-              <Button size="icon" variant="ghost" aria-label={`Move ${d.name} down`} disabled={i === sorted.length - 1} onClick={() => move(i, 1)}>
+              <Button size="icon" variant="ghost" className="hidden sm:inline-flex" aria-label={`Move ${d.name} down`} disabled={i === sorted.length - 1} onClick={() => move(i, 1)}>
                 <ArrowDown className="size-4" />
               </Button>
               <Button size="icon" variant="ghost" aria-label={`Edit ${d.name}`} onClick={() => setEditing(d)}>
@@ -168,9 +190,11 @@ export function CustomDeductionsEditor() {
               >
                 <Trash2 className="size-4" />
               </Button>
-            </li>
+            </>
+              )}
+            </DragRow>
           ))}
-        </ul>
+        </Reorder.Group>
       )}
       <Button variant="outline" onClick={() => setEditing(blank(sorted.length))}>
         <Plus className="size-4" /> Add deduction

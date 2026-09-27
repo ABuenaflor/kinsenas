@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { CutoffId } from "@/domain/types";
-import { periodOf, todayISO } from "@/lib/periods";
+import { defaultCutoffToLog, periodOf, todayISO } from "@/lib/periods";
 import { generateDemoData } from "@/dev/demoData";
 import { defaultData } from "./defaults";
 import { migrate, STORE_KEY, STORE_VERSION } from "./migrations";
@@ -24,7 +24,8 @@ interface CoreSlice {
   snapshot: () => AppData;
   restore: (data: AppData) => void;
   replaceData: (data: AppData) => void;
-  mergeData: (data: AppData) => void;
+  /** Union by id; with includeSettings also adopt the backup's paydays, salary, rates and gov settings (keeps your theme/motion). */
+  mergeData: (data: AppData, opts?: { includeSettings?: boolean }) => void;
   resetAll: () => void;
   loadDemo: () => void;
 }
@@ -56,8 +57,15 @@ export const useStore = create<Store>()(
       snapshot: () => pickData(get()),
       restore: (data) => set(structuredClone(data)),
       replaceData: (data) => set(structuredClone(data)),
-      mergeData: (data) =>
+      mergeData: (data, opts) =>
         set((s) => ({
+          ...(opts?.includeSettings
+            ? {
+                settings: { ...data.settings, theme: s.settings.theme, motion: s.settings.motion, smoothScroll: s.settings.smoothScroll, show3D: s.settings.show3D, onboardingDone: true },
+                govRates: data.govRates,
+                govDeductions: data.govDeductions,
+              }
+            : {}),
           customDeductions: mergeById(s.customDeductions, data.customDeductions),
           buckets: mergeById(s.buckets, data.buckets),
           rules: mergeById(s.rules, data.rules),
@@ -95,7 +103,10 @@ export const useStore = create<Store>()(
         const merged = { ...current, ...p } as Store;
         // Settings may gain new keys over time; keep defaults for anything missing.
         merged.settings = { ...current.settings, ...(p.settings ?? {}) };
-        merged.ui = { ...current.ui, period: periodOf(todayISO(), merged.settings.paydays) };
+        merged.ui = {
+          ...current.ui,
+          period: defaultCutoffToLog(todayISO(), merged.settings.paydays, new Set((merged.cutoffs ?? []).map((c) => c.id))),
+        };
         return merged;
       },
     },

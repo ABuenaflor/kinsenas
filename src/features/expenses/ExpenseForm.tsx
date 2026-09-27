@@ -57,7 +57,6 @@ export function ExpenseForm({
   onSubmit,
   submitLabel,
   compact,
-  autoFocus = true,
   extraActions,
 }: {
   value: ExpenseFormValue;
@@ -65,7 +64,6 @@ export function ExpenseForm({
   onSubmit: () => void;
   submitLabel: string;
   compact?: boolean;
-  autoFocus?: boolean;
   extraActions?: React.ReactNode;
 }) {
   const id = useId();
@@ -91,7 +89,7 @@ export function ExpenseForm({
     >
       <div className={cn("grid gap-3", compact ? "md:grid-cols-[14rem_1fr]" : "")}>
         <Field label="Amount" htmlFor={`${id}-amt`}>
-          <MoneyInput id={`${id}-amt`} ref={amountRef} size="lg" autoFocus={autoFocus} data-autofocus value={value.amount} onValueChange={(v) => set({ amount: v })} />
+          <MoneyInput id={`${id}-amt`} ref={amountRef} size="lg" data-autofocus value={value.amount} onValueChange={(v) => set({ amount: v })} />
         </Field>
         <Field label="Note" htmlFor={`${id}-note`}>
           <TextInput id={`${id}-note`} className="min-h-14" value={value.note} onChange={(e) => set({ note: e.target.value })} placeholder="e.g. lunch with team" />

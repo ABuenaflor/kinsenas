@@ -82,6 +82,16 @@ const cutoff = z.object({
       extras: z.array(z.object({ id: z.string(), label: z.string(), amount: int })),
     })
     .optional(),
+  basis: z
+    .object({
+      monthlyBasicSalary: nonNeg.nullable(),
+      govRates,
+      govDeductions: z.array(govDeduction),
+      customDeductions: z.array(customDeduction),
+      rule,
+      buckets: z.array(bucket),
+    })
+    .optional(),
   deductions: z.array(z.object({ key: z.string(), label: z.string(), source: z.enum(["gov", "custom"]), amount: int })),
   totalDeductions: int,
   net: int,
