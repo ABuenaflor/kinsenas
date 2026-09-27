@@ -1,0 +1,324 @@
+@import "tailwindcss";
+
+/* ---------- Tokens: Paper (default, light) ---------- */
+:root,
+[data-theme="paper"] {
+  color-scheme: light;
+  --bg: #f6f3ec;
+  --surface: #fffdf8;
+  --surface-2: #efeae0;
+  --line: #e2dccf;
+  --ink: #1a1916;
+  --muted: #6b675e;
+  --accent: #1a1916;
+  --accent-ink: #fffdf8;
+  --highlight: #f2d14b;
+  --savings: #2e7d5b;
+  --essentials: #3559c7;
+  --wants: #d9682f;
+  --deduction: #8a8175;
+  --danger: #c23b2e;
+  --success: #2e7d5b;
+
+  --swatch-1: #b5484f;
+  --swatch-2: #2f7f8c;
+  --swatch-3: #7a5cc2;
+  --swatch-4: #9a6415;
+  --swatch-5: #3b7a3b;
+  --swatch-6: #b0457e;
+  --swatch-7: #4f6a8f;
+  --swatch-8: #8c5a3c;
+
+  --shadow-1: 0 1px 2px rgb(26 25 22 / 0.06), 0 8px 24px rgb(26 25 22 / 0.06);
+  --shadow-2: 0 2px 6px rgb(26 25 22 / 0.08), 0 24px 64px rgb(26 25 22 / 0.16);
+  --card-border: transparent;
+  --inner-glow: none;
+  --grid-dot: rgb(26 25 22 / 0.11);
+  --tape: rgb(242 225 170 / 0.72);
+  --tape-edge: rgb(180 160 100 / 0.25);
+  --label-tape: #1f1e1b;
+  --label-ink: #f3efe6;
+  --sticker-edge: #ffffff;
+  --grain-opacity: 0.035;
+  --receipt: #fffefa;
+}
+
+/* ---------- Tokens: Workbench (dark) ---------- */
+[data-theme="workbench"] {
+  color-scheme: dark;
+  --bg: #0b0b0c;
+  --surface: #141416;
+  --surface-2: #1c1c1f;
+  --line: #27272b;
+  --ink: #edebe6;
+  --muted: #8d8a84;
+  --accent: #edebe6;
+  --accent-ink: #0b0b0c;
+  --highlight: #e8c547;
+  --savings: #4fb386;
+  --essentials: #6f8cf0;
+  --wants: #f08a52;
+  --deduction: #77736c;
+  --danger: #f06a5b;
+  --success: #4fb386;
+
+  --swatch-1: #f07a82;
+  --swatch-2: #5cc2cf;
+  --swatch-3: #a98df0;
+  --swatch-4: #e0a64a;
+  --swatch-5: #7ccb7c;
+  --swatch-6: #ea7db6;
+  --swatch-7: #8fa9d6;
+  --swatch-8: #d19a77;
+
+  --shadow-1: none;
+  --shadow-2: 0 24px 64px rgb(0 0 0 / 0.6);
+  --card-border: var(--line);
+  --inner-glow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+  --grid-dot: rgb(255 255 255 / 0.045);
+  --tape: rgb(232 197 71 / 0.28);
+  --tape-edge: rgb(232 197 71 / 0.18);
+  --label-tape: #2c2c31;
+  --label-ink: #edebe6;
+  --sticker-edge: #2a2a2f;
+  --grain-opacity: 0.05;
+  --receipt: #18181b;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-highlight: var(--highlight);
+  --color-savings: var(--savings);
+  --color-essentials: var(--essentials);
+  --color-wants: var(--wants);
+  --color-deduction: var(--deduction);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-receipt: var(--receipt);
+
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-hand: "Caveat", "Segoe Print", cursive;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-card: var(--shadow-1);
+  --shadow-drawer: var(--shadow-2);
+
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+  --text-4xl: 48px;
+  --text-5xl: 64px;
+}
+
+/* ---------- Base ---------- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    background: var(--bg);
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+  ::selection {
+    background: var(--highlight);
+    color: #1a1916;
+  }
+  :focus-visible {
+    outline: 2px solid var(--highlight);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+}
+
+/* ---------- Utilities ---------- */
+@utility money {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+@utility card {
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1), var(--inner-glow);
+}
+
+@utility field {
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  min-height: 44px;
+  padding: 0 14px;
+  color: var(--ink);
+  transition: border-color 150ms ease-out, background 150ms ease-out;
+  &:hover {
+    border-color: var(--line);
+  }
+  &:focus-within,
+  &:focus {
+    border-color: var(--ink);
+    outline: none;
+  }
+  &::placeholder {
+    color: var(--muted);
+  }
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@utility sr-only-focusable {
+  position: absolute;
+  left: -9999px;
+  &:focus {
+    left: 16px;
+    top: 16px;
+    z-index: 100;
+  }
+}
+
+/* Graph-paper dot grid (Paper) / cutting-mat lines (Workbench) */
+.grid-bg {
+  background-image: radial-gradient(circle at 1px 1px, var(--grid-dot) 1.1px, transparent 0);
+  background-size: 22px 22px;
+}
+[data-theme="workbench"] .grid-bg {
+  background-image:
+    linear-gradient(var(--grid-dot) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-dot) 1px, transparent 1px),
+    linear-gradient(rgb(255 255 255 / 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px);
+  background-size: 110px 110px, 110px 110px, 22px 22px, 22px 22px;
+}
+
+/* Paper grain */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Thermal receipt with zig-zag torn bottom */
+.receipt {
+  background: var(--receipt);
+  --zz: 10px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--zz)) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(var(--zz) * 2) var(--zz) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--zz)) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(var(--zz) * 2) var(--zz) repeat-x;
+  padding-bottom: calc(var(--zz) + 18px);
+  filter: drop-shadow(0 8px 18px rgb(26 25 22 / 0.08));
+}
+[data-theme="workbench"] .receipt {
+  filter: none;
+}
+.dash {
+  border: 0;
+  border-top: 1.5px dashed var(--line);
+}
+
+/* Masking tape */
+.tape {
+  background: var(--tape);
+  box-shadow: inset 0 0 0 1px var(--tape-edge);
+  clip-path: polygon(2% 8%, 6% 0, 12% 10%, 18% 2%, 100% 0, 97% 30%, 100% 55%, 98% 100%, 90% 92%, 84% 100%, 0 100%, 3% 60%, 0 35%);
+  backdrop-filter: blur(1px);
+}
+
+/* Label maker tag */
+.label-tag {
+  background: var(--label-tape);
+  color: var(--label-ink);
+  font-family: var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgb(0 0 0 / 0.6), 0 -1px 0 rgb(255 255 255 / 0.12);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), inset 0 -1px 0 rgb(0 0 0 / 0.4);
+}
+
+/* Die-cut sticker */
+.sticker {
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--sticker-edge), 0 3px 8px rgb(26 25 22 / 0.14);
+}
+
+/* Hatched overspend pattern */
+.hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--danger) 0 5px,
+    color-mix(in oklab, var(--danger) 55%, transparent) 5px 10px
+  );
+}
+
+/* Stamp ink texture */
+.stamp-ink {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='1 1 1 0.35 1 1 0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='1 1 1 0.35 1 1 0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
