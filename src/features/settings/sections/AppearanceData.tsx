@@ -8,6 +8,7 @@ import { downloadFile, toCsv } from "@/lib/csv";
 import { todayISO } from "@/lib/periods";
 import { makeExport, parseImport, type ExportFile } from "@/store/schema";
 import { pickData, useStore } from "@/store/useStore";
+import { useSyncStatus } from "@/sync/status";
 
 export function AppearanceEditor() {
   const settings = useStore((s) => s.settings);
@@ -58,6 +59,8 @@ export function DataEditor() {
   const mergeData = useStore((s) => s.mergeData);
   const resetAll = useStore((s) => s.resetAll);
   const loadDemo = useStore((s) => s.loadDemo);
+  const synced = useSyncStatus((s) => s.email !== null);
+  const everywhere = synced ? " This also applies to your other signed-in devices." : "";
 
   const exportJson = () => {
     const file = makeExport(pickData(useStore.getState()), new Date().toISOString());
@@ -115,7 +118,7 @@ export function DataEditor() {
         open={!!pending}
         onClose={() => setPending(null)}
         title="Import this backup?"
-        description={pending && `Exported ${new Date(pending.exportedAt).toLocaleString("en-PH")}`}
+        description={pending && `Exported ${new Date(pending.exportedAt).toLocaleString("en-PH")}.${synced ? " Replace also applies to your other signed-in devices." : ""}`}
         footer={
           <>
             <Button variant="ghost" onClick={() => setPending(null)}>
@@ -152,7 +155,7 @@ export function DataEditor() {
         tone="solid"
         confirmLabel="Load demo"
         title="Load demo data?"
-        description="This replaces your current data with 6 months of sample paydays and expenses. You can undo right after."
+        description={`This replaces your current data with 6 months of sample paydays and expenses. You can undo right after.${everywhere}`}
         onConfirm={() => {
           const snap = useStore.getState().snapshot();
           void loadDemo().then(() => toast("Demo data loaded", { undo: () => useStore.getState().restore(snap) }));
@@ -164,7 +167,7 @@ export function DataEditor() {
         requireText="RESET"
         confirmLabel="Erase everything"
         title="Reset everything?"
-        description="All cutoffs, expenses, To-Buy items and settings will be erased from this browser. Export a backup first if you might want them."
+        description={`All cutoffs, expenses, To-Buy items and settings will be erased from this browser. Export a backup first if you might want them.${everywhere}`}
         onConfirm={() => {
           resetAll();
           toast("Everything was reset");

@@ -7,6 +7,7 @@ import { CustomDeductionsEditor } from "./sections/CustomDeductions";
 import { GovDeductionsEditor } from "./sections/GovDeductions";
 import { PaydayFields } from "./sections/Paydays";
 import { RatesEditor } from "./sections/Rates";
+import { SyncEditor } from "./sections/SyncSection";
 
 const SECTIONS = [
   { id: "paydays", title: "Paydays & salary" },
@@ -16,6 +17,7 @@ const SECTIONS = [
   { id: "buckets", title: "Buckets & allocation rules" },
   { id: "categories", title: "Categories" },
   { id: "appearance", title: "Appearance & motion" },
+  { id: "sync", title: "Sync across devices" },
   { id: "data", title: "Data" },
 ];
 
@@ -61,7 +63,10 @@ export default function SettingsPage() {
           <Section id="appearance" title="Appearance & motion">
             <AppearanceEditor />
           </Section>
-          <Section id="data" title="Data" description="Everything lives in this browser. Export a backup now and then.">
+          <Section id="sync" title="Sync across devices">
+            <SyncEditor />
+          </Section>
+          <Section id="data" title="Data" description="Export a backup now and then.">
             <DataEditor />
           </Section>
         </div>

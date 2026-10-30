@@ -17,6 +17,7 @@
 - **Initial load:** static boot shell in `index.html`; a build plugin (`vite.config.ts`) modulepreloads the current route's chunk, Motion features, and onboarding (first run only). Drawers are lazy and idle-prefetched; the ⌘K palette is in the main bundle so it takes keystrokes instantly.
 - **Measured (Lighthouse, production build):** Accessibility 99–100 and Best Practices 100 on every page; desktop Performance 98–99; mobile (simulated slow 4G) Performance ~80–88, below the §15 target of 90. What remains is download time for React + React Router before first render; closing the gap would need prerendering/SSR.
 - `npm run lint` = ESLint (typescript-eslint, react-hooks, jsx-a11y).
+- **Cloud sync (added after v1, Oct 2026; overrides "no backend, no login" in §1 and the §18 exclusion):** optional, via Supabase, on when `VITE_SUPABASE_URL` + `VITE_SUPABASE_KEY` are set. Email + password sign-in in Settings → Sync. localStorage stays the source of truth and the app still works offline. Table `kinsenas_records` (`supabase/schema.sql`, RLS: own rows only) holds one row per record (each collection item, plus `settings`/`govRates` singletons) with tombstones for deletes and a server-stamped `updated_at`. Each cycle pulls rows since a cursor (10s overlap), then pushes everything whose hash differs from the last-synced "shadow". Conflicts: a record edited here since the last sync wins; a record never synced here takes the remote copy (so a new device adopts the account's settings). Theme, motion, smooth scroll and 3D stay per device. Pure logic in `src/sync/records.ts` (tested); I/O in `src/sync/engine.ts`, which is lazy-loaded on idle. Runs on edit (1.5s debounce), focus, coming back online, and every 30s while visible. Bump `schema_version` with `STORE_VERSION`; older clients stop syncing when they see newer rows.
 
 ---
 
@@ -35,7 +36,7 @@ Other pages:
 - **To-Buy**: a wishlist where the user sets money aside for each item and tracks progress.
 - **Settings**: every rule, rate, deduction, bucket, category, theme, and data export/import.
 
-Single user, offline-first, no backend, no login. All data lives in the browser.
+Single user, offline-first. All data lives in the browser; optional sign-in syncs it across devices (see §0).
 
 ---
 
@@ -328,4 +329,4 @@ Encoded in `src/domain/__tests__/acceptance.test.ts` (cases A–L). Do not chang
 
 ## 18. Out of scope for v1
 
-Cloud sync/accounts, multi-currency, bank/e-wallet imports, recurring expenses, 13th-month and bonus handling, full annual tax reconciliation, PWA/offline install and push reminders, shared household budgets.
+Multi-currency, bank/e-wallet imports, recurring expenses, 13th-month and bonus handling, full annual tax reconciliation, PWA/offline install and push reminders, shared household budgets.
