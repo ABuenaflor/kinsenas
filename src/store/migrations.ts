@@ -2,7 +2,7 @@ import { defaultData } from "./defaults";
 import type { AppData } from "./types";
 import { DATA_KEYS } from "./types";
 
-export const STORE_VERSION = 2;
+export const STORE_VERSION = 3;
 export const STORE_KEY = "kinsenas:v1";
 
 type Migration = (state: Record<string, unknown>) => Record<string, unknown>;
@@ -22,6 +22,8 @@ export const migrations: Record<number, Migration> = {
   // v1 → v2: cutoffs gain an optional `basis` (what they were computed with).
   // It can't be reconstructed for old cutoffs, so they keep editing with current settings.
   1: (state) => state,
+  // v2 → v3: Expenses page remarks.
+  2: (state) => ({ ...state, remarks: Array.isArray(state.remarks) ? state.remarks : [] }),
 };
 
 export function migrate(persisted: unknown, fromVersion: number): AppData {

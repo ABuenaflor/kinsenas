@@ -7,6 +7,7 @@ import type {
   Expense,
   GovDeduction,
   GovRates,
+  Remark,
   Settings,
   ToBuyItem,
 } from "@/domain/types";
@@ -23,6 +24,7 @@ export interface AppData {
   cutoffs: Cutoff[];
   expenses: Expense[];
   toBuy: ToBuyItem[];
+  remarks: Remark[];
 }
 
 export const DATA_KEYS = [
@@ -36,4 +38,5 @@ export const DATA_KEYS = [
   "cutoffs",
   "expenses",
   "toBuy",
+  "remarks",
 ] as const satisfies readonly (keyof AppData)[];

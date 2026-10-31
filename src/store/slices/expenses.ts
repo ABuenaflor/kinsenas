@@ -10,6 +10,9 @@ export interface ExpensesSlice {
   addExpense: (draft: ExpenseDraft) => Expense;
   updateExpense: (id: string, patch: Partial<Omit<Expense, "id" | "createdAt">>) => void;
   removeExpense: (id: string) => void;
+  addRemark: (text: string) => void;
+  updateRemark: (id: string, text: string) => void;
+  removeRemark: (id: string) => void;
 }
 
 export const expensesSlice = (set: Set, get: Get): ExpensesSlice => ({
@@ -39,4 +42,9 @@ export const expensesSlice = (set: Set, get: Get): ExpensesSlice => ({
         : s.toBuy;
       return { expenses: s.expenses.filter((e) => e.id !== id), toBuy };
     }),
+  addRemark: (text) =>
+    set((s) => ({ remarks: [...s.remarks, { id: newId(), text: text.trim(), createdAt: new Date().toISOString() }] })),
+  updateRemark: (id, text) =>
+    set((s) => ({ remarks: s.remarks.map((r) => (r.id === id ? { ...r, text: text.trim(), updatedAt: new Date().toISOString() } : r)) })),
+  removeRemark: (id) => set((s) => ({ remarks: s.remarks.filter((r) => r.id !== id) })),
 });

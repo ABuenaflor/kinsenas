@@ -73,6 +73,7 @@ export const useStore = create<Store>()(
           cutoffs: mergeById(s.cutoffs, data.cutoffs),
           expenses: mergeById(s.expenses, data.expenses),
           toBuy: mergeById(s.toBuy, data.toBuy),
+          remarks: mergeById(s.remarks, data.remarks),
         })),
       resetAll: () => set({ ...defaultData(), ui: { ...get().ui, period: initialPeriod() } }),
       loadDemo: async () => {

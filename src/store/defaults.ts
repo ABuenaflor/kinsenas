@@ -79,5 +79,6 @@ export function defaultData(): AppData {
     cutoffs: [],
     expenses: [],
     toBuy: [],
+    remarks: [],
   });
 }

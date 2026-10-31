@@ -292,7 +292,7 @@ Receipt footer: "Estimates only. Your employer's payroll is the official computa
 ## 12. Pages
 
 - **Payday (`/`)**: hero strip (greeting, next payday countdown, optional 3D coin jar), input card (cutoff picker, gross MoneyInput, "already deducted" toggle, collapsible adjust: one-time extra deduction, rule, note), live receipt, envelopes, save + stamp + toast with Undo, history grouped by month with drawer (stored receipt, Re-apply current rules with diff, delete).
-- **Expenses (`/expenses`)**: header totals (Cutoff | Month | All time), per-bucket progress, quick add (Enter keeps form open), list grouped by day, filters (search, category, bucket, amount range), by-category breakdown, CSV export.
+- **Expenses (`/expenses`)**: header totals (Cutoff | Month | All time), per-bucket progress, quick add (Enter keeps form open), list grouped by day, filters (search, category, bucket, amount range), by-category breakdown, Remarks under it (free-text notes with Save/Cancel, edit, delete with Undo; stored as `remarks` in app data since store v3, so they sync and export), CSV export.
 - **To-Buy (`/to-buy`)**: summary strip, item cards (polaroid if image), progress, ETA, add money / withdraw / mark as bought / edit / archive, auto set-aside, sort + drag reorder, bought section, contribution history.
 - **Insights (`/insights`)**: range + granularity + bucket filter; KPI tiles with sparklines and ▲/▼ deltas; Monthly flow, Allocated vs spent, Savings over time, Where the gross went, Spending by category, Spending calendar.
 - **Settings (`/settings`)**: Paydays & salary, Government deductions, Rates, Custom deductions, Buckets & rules (SplitBar), Categories, Appearance & motion, Data.

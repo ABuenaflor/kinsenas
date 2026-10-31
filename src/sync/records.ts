@@ -6,7 +6,7 @@ import type { AppData } from "@/store/types";
  * settings and rates singletons. Pure functions only; the engine does the I/O.
  */
 
-export const COLLECTIONS = ["govDeductions", "customDeductions", "buckets", "rules", "categories", "cutoffs", "expenses", "toBuy"] as const;
+export const COLLECTIONS = ["govDeductions", "customDeductions", "buckets", "rules", "categories", "cutoffs", "expenses", "toBuy", "remarks"] as const;
 export const SINGLETONS = ["settings", "govRates"] as const;
 type Collection = (typeof COLLECTIONS)[number];
 type Singleton = (typeof SINGLETONS)[number];

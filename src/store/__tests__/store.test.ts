@@ -120,7 +120,11 @@ describe("persistence", () => {
   it("migrates a v0 blob by filling defaults", () => {
     const m = migrate({ cutoffs: [] }, 0);
     expect(m.buckets).toEqual(defaultData().buckets);
-    expect(STORE_VERSION).toBe(2);
+    expect(STORE_VERSION).toBe(3);
+  });
+  it("migrates v2 → v3 adding empty remarks", () => {
+    const { remarks: _, ...v2 } = defaultData();
+    expect(migrate(v2, 2).remarks).toEqual([]);
   });
   it("migrates v1 → v2 keeping cutoffs without a basis", () => {
     const v1 = { ...defaultData(), cutoffs: [{ id: "2026-09-A", gross: 100 }] };

@@ -145,6 +145,8 @@ const toBuyItem = z.object({
   createdAt: z.string(),
 });
 
+const remark = z.object({ id: z.string(), text: z.string(), createdAt: z.string(), updatedAt: z.string().optional() });
+
 export const appDataSchema = z.object({
   settings,
   govRates,
@@ -156,6 +158,8 @@ export const appDataSchema = z.object({
   cutoffs: z.array(cutoff),
   expenses: z.array(expense),
   toBuy: z.array(toBuyItem),
+  // Backups from before v3 have no remarks.
+  remarks: z.array(remark).default([]),
 });
 
 export const exportFileSchema = z.object({

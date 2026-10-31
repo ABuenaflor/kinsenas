@@ -155,6 +155,14 @@ export interface Expense {
   createdAt: string;
 }
 
+/** A free-text note on the Expenses page (e.g. why food ran high this cutoff). */
+export interface Remark {
+  id: string;
+  text: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export interface Contribution {
   id: string;
   cutoffId: CutoffId;

@@ -19,6 +19,7 @@ import { toast } from "@/components/ui/Toast";
 import { ExpenseForm, initialForm, useRecentCategories, type ExpenseFormValue } from "./ExpenseForm";
 import { ExpenseList } from "./ExpenseList";
 import { FiltersBar } from "./FiltersBar";
+import { Remarks } from "./Remarks";
 import { useExpenseView, type Scope } from "./useExpenseView";
 
 function Stat({ label, value, tone, sub }: { label: string; value: React.ReactNode; tone?: "danger" | "success"; sub?: string }) {
@@ -193,29 +194,32 @@ export default function ExpensesPage() {
           <h2 className="sr-only">Transactions</h2>
           <ExpenseList days={view.days} />
         </div>
-        <Card className="lg:sticky lg:top-28">
-          <p className="eyebrow mb-3">By category</p>
-          {byCategory.length === 0 ? (
-            <p className="text-sm text-muted">Nothing yet.</p>
-          ) : (
-            <ul className="space-y-3">
-              {byCategory.map(([id, total]) => {
-                const c = catMap.get(id);
-                return (
-                  <li key={id}>
-                    <div className="mb-1 flex justify-between gap-2 text-sm">
-                      <span className="truncate">
-                        <span aria-hidden>{c?.emoji}</span> {c?.name ?? "Unknown"}
-                      </span>
-                      <span className="money shrink-0 text-xs">{formatMoney(total)}</span>
-                    </div>
-                    <ProgressBar value={ratio(total, maxCat)} color={c?.color ?? "var(--ink)"} label={`${c?.name} share`} />
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </Card>
+        <div className="space-y-4 lg:sticky lg:top-28">
+          <Card>
+            <p className="eyebrow mb-3">By category</p>
+            {byCategory.length === 0 ? (
+              <p className="text-sm text-muted">Nothing yet.</p>
+            ) : (
+              <ul className="space-y-3">
+                {byCategory.map(([id, total]) => {
+                  const c = catMap.get(id);
+                  return (
+                    <li key={id}>
+                      <div className="mb-1 flex justify-between gap-2 text-sm">
+                        <span className="truncate">
+                          <span aria-hidden>{c?.emoji}</span> {c?.name ?? "Unknown"}
+                        </span>
+                        <span className="money shrink-0 text-xs">{formatMoney(total)}</span>
+                      </div>
+                      <ProgressBar value={ratio(total, maxCat)} color={c?.color ?? "var(--ink)"} label={`${c?.name} share`} />
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Card>
+          <Remarks />
+        </div>
       </div>
     </div>
   );
